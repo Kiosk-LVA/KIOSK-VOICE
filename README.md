@@ -29,9 +29,9 @@ Listen to sample outputs from our TTS system:
 
 ### Web Demo - Browser-based TTS
 
-<video src="https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20WEB.mp4" controls width="100%">
-  Your browser does not support the video tag. [Download the video](examples/ValtecTTS%20-%20WEB.mp4)
-</video>
+**[▶️ Watch Web Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20WEB.mp4)**
+
+![Web Demo Preview](https://via.placeholder.com/800x450.png?text=Web+Demo+-+Click+link+above+to+watch)
 
 **Features:**
 - ✅ Runs entirely in browser using ONNX Runtime Web
@@ -45,9 +45,9 @@ Listen to sample outputs from our TTS system:
 
 ### Android Demo - On-Device TTS
 
-<video src="https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20Android.mp4" controls width="100%">
-  Your browser does not support the video tag. [Download the video](examples/ValtecTTS%20-%20Android.mp4)
-</video>
+**[▶️ Watch Android Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20Android.mp4)**
+
+![Android Demo Preview](https://via.placeholder.com/800x450.png?text=Android+Demo+-+Click+link+above+to+watch)
 
 **Features:**
 - ✅ On-device ONNX inference
@@ -234,8 +234,8 @@ tts.speak("Xin chào", speaker="SM")   # Southern Male
 ## Synthesis Parameters
 
 - `speed` (default: 1.0): Speech speed
-  - < 1.0 = faster
-  - > 1.0 = slower
+  - '< 1.0 = faster'
+  - '> 1.0 = slower'
 - `noise_scale` (default: 0.667): Controls variability in generated speech
 - `noise_scale_w` (default: 0.8): Controls duration variability
 - `sdp_ratio` (default: 0.0): Stochastic Duration Predictor ratio
