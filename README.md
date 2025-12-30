@@ -29,7 +29,9 @@ Listen to sample outputs from our TTS system:
 
 ### Web Demo - Browser-based TTS
 
-![Web Demo](examples/ValtecTTS%20-%20WEB.mp4)
+<video src="https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20WEB.mp4" controls width="100%">
+  Your browser does not support the video tag. [Download the video](examples/ValtecTTS%20-%20WEB.mp4)
+</video>
 
 **Features:**
 - ✅ Runs entirely in browser using ONNX Runtime Web
@@ -43,7 +45,9 @@ Listen to sample outputs from our TTS system:
 
 ### Android Demo - On-Device TTS
 
-![Android Demo](examples/ValtecTTS%20-%20Android.mp4)
+<video src="https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20Android.mp4" controls width="100%">
+  Your browser does not support the video tag. [Download the video](examples/ValtecTTS%20-%20Android.mp4)
+</video>
 
 **Features:**
 - ✅ On-device ONNX inference
