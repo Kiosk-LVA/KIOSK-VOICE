@@ -1,353 +1,363 @@
 # Valtec Vietnamese TTS
 
-A Vietnamese Text-to-Speech system supporting multiple speakers with high-quality voice synthesis.
+Vietnamese Text-to-Speech with **Multi-Speaker TTS** and **Zero-Shot Voice Cloning**.
 
-## Features
+> **The lightest Vietnamese zero-shot voice cloning model** — only **74.8M parameters**, runs entirely on **CPU**, 3-4x faster than realtime. No GPU required.
 
-- Multi-speaker Vietnamese TTS
-- **⚡ Ultra-fast inference** with GPU acceleration (RTF as low as **0.014**)
-- Advanced Vietnamese text normalization and phonemization
-- Natural prosody and intonation
-- Auto-download pretrained models from Hugging Face
-- Simple 2-line API for quick usage
+## Highlights
 
-## 🎧 Audio Examples
-
-Listen to sample outputs from our TTS system:
-
-| Speaker | Region | Gender | Sample Text | Audio |
-|---------|--------|--------|-------------|-------|
-| **NF** | Northern (Bắc) | Female | "Tiếng xe cộ nhộn nhịp và ánh nắng len qua từng con phố nhỏ." | [▶️ example_NF.wav](examples/example_NF.wav) |
-| **SF** | Southern (Nam) | Female | "Tiếng xe cộ nhộn nhịp và ánh nắng len qua từng con phố nhỏ." | [▶️ example_SF.wav](examples/example_SF.wav) |
-| **NM1** | Northern (Bắc) | Male | "Tiếng xe cộ nhộn nhịp và ánh nắng len qua từng con phố nhỏ." | [▶️ example_NM1.wav](examples/example_NM1.wav) |
-| **SM** | Southern (Nam) | Male | "Tiếng xe cộ nhộn nhịp và ánh nắng len qua từng con phố nhỏ." | [▶️ example_SM.wav](examples/example_SM.wav) |
-| **NM2** | Northern (Bắc) | Male | "Tiếng xe cộ nhộn nhịp và ánh nắng len qua từng con phố nhỏ." | [▶️ example_NM2.wav](examples/example_NM2.wav) |
-
-> 💡 **Tip**: Clone the repository and listen to the files in the `examples/` folder for the best audio quality.
-
-## 🎬 Live Demos
-
-### Web Demo - Browser-based TTS
-
-**[▶️ Watch Web Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20WEB.mp4)**
-
-![Web Demo Preview](https://via.placeholder.com/800x450.png?text=Web+Demo+-+Click+link+above+to+watch)
-
-**Features:**
-- ✅ Runs entirely in browser using ONNX Runtime Web
-- ✅ No backend server required
-- ✅ All 5 Vietnamese voices
-- ✅ Real-time synthesis (~165MB models)
-
-[See full documentation](deployments/web/README.md)
+- **🪶 Ultra-lightweight**: 74.8M params — the lightest Vietnamese zero-shot voice clone model
+- **⚡ CPU-only**: RTF ~0.24 on CPU (4x faster than realtime), no GPU needed
+- **🎯 Zero-shot**: Clone any voice from 3-10s of audio, no fine-tuning
+- **🎨 Prosody Transfer**: Transfer intonation, rhythm, emotion from reference voice
+- **🇻🇳 Vietnamese-native**: Dedicated Vietnamese phonemizer with Northern/Southern support
+- **📦 Multi-speaker TTS**: 5 built-in Vietnamese voices (Northern/Southern, Male/Female)
+- **🔌 Simple API**: `pip install` and use with 2 lines of code
 
 ---
 
-### Android Demo - On-Device TTS
+## 🎧 Zero-Shot Voice Cloning Examples
 
-**[▶️ Watch Android Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20Android.mp4)**
+Same text, cloned with 6 different reference voices:
 
-![Android Demo Preview](https://via.placeholder.com/800x450.png?text=Android+Demo+-+Click+link+above+to+watch)
+| Reference Voice | Description | Cloned Audio |
+|----------------|-------------|--------------|
+| **Thu Hà** | Soft female voice | [▶️ example_thu_ha.wav](examples/zeroshot/example_thu_ha.wav) |
+| **Minh Đức** | Deep male voice | [▶️ example_minh_duc.wav](examples/zeroshot/example_minh_duc.wav) |
+| **Thanh Tâm** | Young female voice | [▶️ example_thanh_tam.wav](examples/zeroshot/example_thanh_tam.wav) |
+| **Quang Huy** | Young male voice | [▶️ example_quang_huy.wav](examples/zeroshot/example_quang_huy.wav) |
+| **Ngọc Ánh** | Professional female | [▶️ example_ngoc_anh.wav](examples/zeroshot/example_ngoc_anh.wav) |
+| **Hoàng Nam** | Strong male voice | [▶️ example_hoang_nam.wav](examples/zeroshot/example_hoang_nam.wav) |
 
-**Features:**
-- ✅ On-device ONNX inference
-- ✅ Offline-capable after installation
-- ✅ Tested on Xiaomi 12S Pro (Snapdragon 8+ Gen 1)
-- ✅ ~200-300ms inference time
+### Multi-Speaker TTS Examples
 
-[See full documentation](deployments/android/README.md)
+| Speaker | Region | Gender | Audio |
+|---------|--------|--------|-------|
+| **NF** | Northern | Female | [▶️ example_NF.wav](examples/example_NF.wav) |
+| **SF** | Southern | Female | [▶️ example_SF.wav](examples/example_SF.wav) |
+| **NM1** | Northern | Male | [▶️ example_NM1.wav](examples/example_NM1.wav) |
+| **SM** | Southern | Male | [▶️ example_SM.wav](examples/example_SM.wav) |
+| **NM2** | Northern | Male | [▶️ example_NM2.wav](examples/example_NM2.wav) |
 
-## ⚡ Performance Benchmark
+> Clone the repo and listen to files in `examples/` for the best audio quality.
 
-### Model Specifications
+---
 
-| Metric | Value |
-|--------|-------|
-| **Total Parameters** | **57.97M** (57,972,657) |
-| Trainable Parameters | 57.97M |
-| Sample Rate | 24,000 Hz |
-| Architecture | VITS-based |
+## ⚡ Performance — CPU is all you need
 
-### Inference Speed
+### Zero-Shot Voice Cloning (74.8M params)
 
-Benchmark conducted on:
-- **CPU**: Intel Core i5-14500 (14 cores)
-- **GPU**: NVIDIA GeForce RTX 4060 Ti (16GB VRAM, Compute Capability 8.9)
-- **PyTorch**: 2.9.1+cu128
-- **OS**: Linux
+| Component | Parameters | Purpose |
+|-----------|-----------|---------|
+| **Synthesizer** | 56.45M | Voice synthesis |
+| **Speaker Encoder** | 8.03M | Voice identity extraction |
+| **Style Encoder** | 7.80M | Prosody/style extraction |
+| **Prosody Predictor** | 2.52M | F0/energy prediction |
+| **Total** | **74.80M** | **~285 MB (FP32)** |
 
-#### CPU Inference (Intel i5-14500)
+#### Zero-Shot CPU Benchmark
 
-| Input Length | Inference Time | Audio Length | RTF |
-|-------------|----------------|--------------|-----|
-| Short (15 chars) | 391.59ms ± 268.76ms | 0.73s | 0.5354 ✅ |
-| Medium (52 chars) | 853.95ms ± 262.50ms | 2.23s | 0.3831 ✅ |
-| Long (120 chars) | 1653.24ms ± 384.59ms | 4.91s | 0.3366 ✅ |
+> Runs entirely on CPU — no GPU needed!
 
-#### 🚀 CUDA Inference (RTX 4060 Ti)
+| Input Length | Inference Time | Audio Length | RTF | Speed |
+|-------------|----------------|--------------|-----|-------|
+| Short (16 chars) | **506ms** | 1.07s | 0.475 | **2.1x realtime** |
+| Medium (60 chars) | **1,030ms** | 3.61s | 0.286 | **3.5x realtime** |
+| Long (156 chars) | **2,229ms** | 9.45s | 0.236 | **4.2x realtime** |
 
-| Input Length | Inference Time | Audio Length | RTF | Speedup vs CPU |
-|-------------|----------------|--------------|-----|----------------|
-| Short (15 chars) | **45.14ms** ± 24.69ms | 0.73s | **0.0617** ✅ | **8.7x** |
-| Medium (52 chars) | **51.82ms** ± 29.35ms | 2.23s | **0.0232** ✅ | **16.5x** |
-| Long (120 chars) | **68.88ms** ± 28.14ms | 4.91s | **0.0140** ✅ | **24.0x** |
+### Multi-Speaker TTS (57.97M params)
 
-> **RTF (Real-Time Factor)**: Ratio of processing time to audio duration. RTF < 1 means faster than real-time.
-> 
-> 🔥 **With CUDA, the model generates audio 70x faster than real-time for long texts!**
+| Mode | Short | Medium | Long |
+|------|-------|--------|------|
+| **CPU** (i5-14500) | 392ms / RTF 0.54 | 854ms / RTF 0.38 | 1,653ms / RTF 0.34 |
+| **CUDA** (RTX 4060 Ti) | **45ms** / RTF 0.06 | **52ms** / RTF 0.02 | **69ms** / RTF 0.01 |
 
-### GPU Speedup Summary
+> **RTF (Real-Time Factor)**: Processing time / audio duration. RTF < 1 = faster than realtime.
 
-```
-⚡ GPU Speedup over CPU:
-   Short text:  8.7x faster
-   Medium text: 16.5x faster  
-   Long text:   24.0x faster
-```
-
-## Requirements
-
-- Python 3.8+
-- PyTorch 2.0+
-- CUDA (optional, for GPU acceleration)
-- **Linux recommended** for best phonemization quality (viphoneme)
-
-> **Note:** On Windows, the system uses a fallback phonemizer. For production-quality Vietnamese pronunciation, please run on Linux or WSL.
+---
 
 ## Installation
 
-### From Git
-
 ```bash
+# From Git
 pip install git+https://github.com/tronghieuit/valtec-tts.git
-```
 
-### From Source
-
-```bash
+# From Source
 git clone https://github.com/tronghieuit/valtec-tts.git
 cd valtec-tts
 pip install -e .
 ```
 
+### Requirements
+
+- Python 3.8+
+- PyTorch 2.0+
+- No GPU required (CUDA optional for multi-speaker acceleration)
+- Linux recommended for best phonemization quality
+
+---
+
 ## Quick Start
 
-### Simple Usage (2 lines)
+### Multi-Speaker TTS (2 lines)
 
 ```python
 from valtec_tts import TTS
 
-tts = TTS()  # Auto-downloads model from Hugging Face if not cached
-tts.speak("Xin chào các bạn", output_path="hello.wav")
+tts = TTS()  # Auto-downloads model from Hugging Face
+tts.speak("Xin chào các bạn", speaker="NF", output_path="hello.wav")
+
+# Get audio array
+audio, sr = tts.synthesize("Xin chào các bạn", speaker="NM1")
+
+# Available speakers: NF, SF, NM1, SM, NM2
+print(tts.list_speakers())
 ```
 
-### Get Audio Array
+### Zero-Shot Voice Cloning (2 lines)
 
 ```python
-from valtec_tts import TTS
+from valtec_tts import ZeroShotTTS
 
-tts = TTS()
-audio, sr = tts.synthesize("Xin chào các bạn")
+tts = ZeroShotTTS()  # Auto-downloads model, CPU by default
+tts.clone_voice(
+    text="Xin chào, tôi là giọng nói được nhân bản",
+    reference_audio="your_voice.wav",
+    output_path="output.wav"
+)
+
+# Or get audio array
+audio, sr = tts.synthesize(
+    text="Đây là văn bản tiếng Việt",
+    reference_audio="references/thu_ha.wav"
+)
 ```
 
-### Choose Speaker
-
-```python
-from valtec_tts import TTS
-
-tts = TTS()
-print(tts.list_speakers())  # ['NF', 'SF', 'NM1', 'SM', 'NM2']
-
-# NF = Northern Female, SF = Southern Female
-tts.speak("Xin chào", speaker="NF", output_path="hello.wav")
-
-# NM1/NM2 = Northern Male, SM = Southern Male  
-tts.speak("Xin chào", speaker="NM1", output_path="hello.wav")
-```
-
-### Adjust Speed
-
-```python
-tts.speak("Nói nhanh hơn", speed=0.8, output_path="fast.wav")   # Faster
-tts.speak("Nói chậm hơn", speed=1.3, output_path="slow.wav")    # Slower
-```
-
-### Select Device (CUDA/CPU)
-
-```python
-tts = TTS(device="cuda")  # Use GPU
-tts = TTS(device="cpu")   # Use CPU
-tts = TTS()               # Auto-detect (default)
-```
-
-### Use Local Model
-
-```python
-tts = TTS(model_path="./pretrained")
-tts.speak("Xin chào", output_path="hello.wav")
-```
-
-## Command Line
+### Command Line
 
 ```bash
-# Single text synthesis
+# Zero-shot voice cloning
+python infer_zeroshot.py \
+  --reference references/thu_ha.wav \
+  --text "Buổi sáng ở thành phố bắt đầu bằng những âm thanh quen thuộc" \
+  --output cloned_voice.wav
+
+# Use your own voice
+python infer_zeroshot.py \
+  --reference your_voice.wav \
+  --text "Văn bản tiếng Việt của bạn" \
+  --output output.wav --cpu
+
+# Multi-speaker TTS
 python infer.py --text "Xin chào các bạn" --speaker NF --output hello.wav
-
-# Try different voices
-python infer.py --text "Xin chào các bạn" --speaker NM1 --output hello_nm1.wav
-python infer.py --text "Xin chào các bạn" --speaker SM --output hello_sm.wav
-
-# Interactive mode
 python infer.py --interactive
-
-# Batch processing from file
-python infer.py --input_file texts.txt --output_dir ./outputs
 ```
 
-## Gradio Demo
+### Gradio Demos
 
 ```bash
-python demo_gradio.py
+# Zero-shot voice cloning demo
+python app_zeroshot.py
+# Open: http://localhost:7860
+
+# Multi-speaker TTS demo
+python app.py
 ```
 
-Then open your browser at `http://localhost:7860`
+---
 
-## Available Speakers
+## 🎤 Zero-Shot Voice Cloning — Details
 
-The pretrained model includes **5 Vietnamese voices** with regional accents:
+### Architecture
 
-| Speaker | Region | Gender | Code | Description |
-|---------|--------|--------|------|-------------|
-| **NF** | 🌆 Northern (Miền Bắc) | 👩 Female | `NF` | Northern Female voice |
-| **SF** | 🌾 Southern (Miền Nam) | 👩 Female | `SF` | Southern Female voice |
-| **NM1** | 🌆 Northern (Miền Bắc) | 👨 Male | `NM1` | Northern Male voice 1 |
-| **SM** | 🌾 Southern (Miền Nam) | 👨 Male | `SM` | Southern Male voice |
-| **NM2** | 🌆 Northern (Miền Bắc) | 👨 Male | `NM2` | Northern Male voice 2 |
+```
+Reference Audio
+    ├─→ Speaker Encoder → Speaker Embedding (512-dim)
+    └─→ Mel Extraction → Style Encoder → Prosody Embedding (128-dim)
 
-**Usage Example:**
+Input Text → Vietnamese Phonemizer → Text Encoder → Text Representation
+
+[Speaker Emb + Prosody Emb + Text Repr] → Voice Generator → Output Audio
+```
+
+#### Components
+
+1. **Speaker Encoder (512-dim)** — Extracts speaker identity from raw audio waveform. L2-normalized for generalization.
+2. **Style Encoder (128-dim)** — Extracts prosody/style from mel spectrograms (80 channels). Captures rhythm, emotion, speaking style.
+3. **Prosody Predictor** — Predicts F0 (pitch) and energy contours from text + style embedding.
+4. **Voice Generator** — Neural vocoder with style-dependent normalization (FiLM conditioning for F0/energy).
+
+### Reference Audio Requirements
+
+For best results:
+
+| ✅ Good | ❌ Bad |
+|---------|--------|
+| 3-10 seconds duration | < 2s (poor representation) |
+| Clean, clear speech | Noisy background |
+| Single speaker | Multiple speakers |
+| Neutral emotion | Extreme emotion/shouting |
+| Any language | Music or sound effects |
+
+```bash
+# Prepare reference audio
+ffmpeg -i full_audio.wav -ss 00:00:10 -t 5 -ar 24000 reference.wav
+ffmpeg -i input.mp3 -ar 24000 -ac 1 reference.wav
+```
+
+### 6 Built-in Reference Voices
+
+Available in `references/`:
+
+| Voice | File | Description |
+|-------|------|-------------|
+| **Thu Hà** | `thu_ha.wav` | Soft, warm female voice |
+| **Minh Đức** | `minh_duc.wav` | Deep, composed male voice |
+| **Thanh Tâm** | `thanh_tam.wav` | Young, bright female voice |
+| **Quang Huy** | `quang_huy.wav` | Young, energetic male voice |
+| **Ngọc Ánh** | `ngoc_anh.wav` | Professional female anchor |
+| **Hoàng Nam** | `hoang_nam.wav` | Strong, deep male voice |
+
+> Upload your own reference audio (3-10 seconds, clear speech) to clone any voice.
+
+### Advanced Usage
+
+#### Speaker Interpolation
+
 ```python
-tts.speak("Xin chào", speaker="NF")   # Northern Female
-tts.speak("Xin chào", speaker="NM1")  # Northern Male 1
-tts.speak("Xin chào", speaker="SM")   # Southern Male
+# Blend two voices
+spk_emb_1 = tts.extract_embeddings("voice_1.wav")[0]
+spk_emb_2 = tts.extract_embeddings("voice_2.wav")[0]
+
+alpha = 0.5  # 50-50 blend
+spk_emb_mixed = alpha * spk_emb_1 + (1 - alpha) * spk_emb_2
 ```
 
-## Synthesis Parameters
+### Limitations
 
-- `speed` (default: 1.0): Speech speed
-  - '< 1.0 = faster'
-  - '> 1.0 = slower'
-- `noise_scale` (default: 0.667): Controls variability in generated speech
-- `noise_scale_w` (default: 0.8): Controls duration variability
-- `sdp_ratio` (default: 0.0): Stochastic Duration Predictor ratio
-  - 0.0 = deterministic
-  - 1.0 = fully stochastic
+- Vietnamese synthesis works best (model supports multiple languages but optimized for Vietnamese)
+- Cannot improve upon reference audio quality
+- Very unique voices may not be perfectly replicated
+- Not optimized for real-time streaming (yet)
 
-## Model Auto-Download
+---
 
-When you first use `TTS()` without specifying a model path, the pretrained model will be automatically downloaded from Hugging Face and cached locally:
+## 🔊 Multi-Speaker TTS — Details
+
+### 5 Vietnamese Voices
+
+| Speaker | Region | Gender | Code |
+|---------|--------|--------|------|
+| **NF** | Northern (Miền Bắc) | Female | `NF` |
+| **SF** | Southern (Miền Nam) | Female | `SF` |
+| **NM1** | Northern (Miền Bắc) | Male | `NM1` |
+| **SM** | Southern (Miền Nam) | Male | `SM` |
+| **NM2** | Northern (Miền Bắc) | Male | `NM2` |
+
+### Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `speed` | 1.0 | < 1.0 = faster, > 1.0 = slower |
+| `noise_scale` | 0.667 | Voice variability |
+| `noise_scale_w` | 0.8 | Duration variability |
+| `sdp_ratio` | 0.0 | 0 = deterministic, 1 = stochastic |
+
+### Model Auto-Download
+
+Models are automatically downloaded from Hugging Face and cached:
 
 - Windows: `%LOCALAPPDATA%\valtec_tts\models\`
 - Linux/Mac: `~/.cache/valtec_tts/models/`
 
-To use a custom Hugging Face repository:
+---
 
-```python
-tts = TTS(hf_repo="valtecAI-team/valtec-tts-pretrained")
-```
+## 🎬 Live Demos
+
+### Web Demo — Browser-based TTS
+
+**[▶️ Watch Web Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20WEB.mp4)**
+
+- Runs entirely in browser using ONNX Runtime Web
+- No backend server required
+- All 5 Vietnamese voices
+- [Full documentation](deployments/web/README.md)
+
+### Android Demo — On-Device TTS
+
+**[▶️ Watch Android Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20Android.mp4)**
+
+- On-device ONNX inference, offline-capable
+- Tested on Xiaomi 12S Pro (Snapdragon 8+ Gen 1)
+- ~200-300ms inference time
+- [Full documentation](deployments/android/README.md)
+
+### HuggingFace Spaces
+
+- **Zero-Shot Voice Cloning**: [valtecAI-team/valtec-zeroshot-voice-cloning](https://huggingface.co/spaces/valtecAI-team/valtec-zeroshot-voice-cloning)
+- **Multi-Speaker TTS**: [valtecAI-team/valtec-vietnamese-tts](https://huggingface.co/spaces/valtecAI-team/valtec-vietnamese-tts)
+
+---
 
 ## Project Structure
 
 ```
 valtec-tts/
-├── valtec_tts/           # Main package
-│   ├── __init__.py
-│   └── tts.py            # Simple TTS API
+├── valtec_tts/           # pip install package
+│   ├── tts.py            # Multi-speaker TTS API
+│   └── zeroshot.py       # Zero-shot voice cloning API
 ├── src/
-│   ├── models/           # Neural network models
-│   ├── text/             # Text processing
-│   ├── vietnamese/       # Vietnamese-specific modules
-│   ├── nn/               # Neural network utilities
-│   └── utils/            # General utilities
-├── pretrained/           # Local pretrained models
-│   └── onnx/             # ONNX export models
-├── deployments/          # Production deployments
-│   ├── edge/             # Edge/lightweight deployment (ONNX)
-│   ├── web/              # Browser-based demo
-│   └── android/          # Android mobile app
-├── infer.py              # Inference script
-├── app.py                # Gradio web demo
-├── export_full_onnx.py   # ONNX export script
-└── README.md
+│   ├── models/           # All model architectures
+│   │   ├── synthesizer_zeroshot.py  # Zero-shot synthesizer
+│   │   ├── synthesizer.py          # Multi-speaker synthesizer
+│   │   ├── encoders.py             # Speaker/Style/Prosody encoders
+│   │   └── adain.py                # Style conditioning module
+│   ├── nn/               # Neural network components + mel processing
+│   ├── text/             # Text/phoneme processing
+│   └── vietnamese/       # Vietnamese text normalization + phonemizer
+├── pretrained/
+│   ├── zeroshot/         # Zero-shot checkpoint + config
+│   ├── hasp/             # Speaker encoder weights
+│   ├── onnx/             # ONNX export models
+│   └── config.json       # Multi-speaker config
+├── references/           # 6 reference voices for zero-shot
+├── examples/
+│   ├── zeroshot/         # Zero-shot cloned audio samples
+│   └── *.wav             # Multi-speaker audio samples
+├── deployments/          # Edge / Web / Android deployments
+├── infer_zeroshot.py     # Zero-shot CLI inference
+├── infer.py              # Multi-speaker CLI inference
+├── app_zeroshot.py       # Gradio demo (zero-shot)
+└── app.py                # Gradio demo (multi-speaker)
 ```
 
 ## 📱 Deployment Options
 
-### Edge/Lightweight Deployment
+| Platform | Technology | Size | Offline |
+|----------|-----------|------|---------|
+| **HuggingFace Spaces** | Gradio | Cloud | No |
+| **Edge** | ONNX Runtime | ~165MB | Yes |
+| **Web** | ONNX Runtime Web | ~165MB | Yes |
+| **Android** | ONNX Runtime Mobile | ~185MB | Yes |
 
-**ONNX Runtime** - Optimized for edge devices and lightweight deployment
+See `deployments/` for detailed guides.
 
-```bash
-cd deployments/edge
-python inference.py --text "Hello Vietnam" --speaker 2
-```
+## Citation
 
-Features:
-- Auto-downloads models from HuggingFace Hub
-- ~165MB total model size
-- CPU & GPU support
-- See [deployments/edge/README.md](deployments/edge/README.md)
-
-### Web Demo
-
-**Browser-based** - No backend server required
-
-```bash
-# Serve from project root
-npx -y http-server . -p 8080
-# Open: http://localhost:8080/deployments/web/
-```
-
-Features:
-- Full ONNX Runtime Web
-- Runs entirely in browser
-- See [deployments/web/README.md](deployments/web/README.md)
-
-### Android App
-
-**Mobile deployment** - On-device TTS
-
-```bash
-cd deployments/android
-./gradlew assembleDebug
-```
-
-Features:
-- ONNX Runtime Mobile
-- ~185MB APK (models included)
-- Offline-capable
-- See [deployments/android/README.md](deployments/android/README.md)
-
-### API Integration
-
-```python
-# Using HuggingFace Spaces API
-import requests
-
-response = requests.post(
-    "https://valtecai-team-valtec-vietnamese-tts.hf.space/api/synthesize",
-    json={"text": "Xin chào", "speaker": "female"}
-)
+```bibtex
+@software{valtec_tts,
+  title = {Valtec Vietnamese TTS with Zero-Shot Voice Cloning},
+  author = {ValtecAI Team},
+  year = {2026},
+  url = {https://github.com/tronghieuit/valtec-tts}
+}
 ```
 
 ## License
 
-This project is licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (Creative Commons Attribution-NonCommercial 4.0 International).
-
-- You may use, share, and adapt this project for non-commercial purposes only.
-- Commercial use is strictly prohibited without prior written permission.
-- You must give appropriate credit to the original authors.
+[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) — Non-commercial use only. Commercial use requires written permission.
 
 ## Acknowledgments
 
-- Vietnamese phonemization support
-- Valtec team for model training and development
+- Valtec AI Team for model training and development
+- Vietnamese phonemization community
