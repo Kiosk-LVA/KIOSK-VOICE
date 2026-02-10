@@ -12,5 +12,6 @@ __version__ = "1.0.0"
 __author__ = "Valtec Team"
 
 from .tts import TTS
+from .zeroshot import ZeroShotTTS
 
-__all__ = ["TTS", "__version__"]
+__all__ = ["TTS", "ZeroShotTTS", "__version__"]

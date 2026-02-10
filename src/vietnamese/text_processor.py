@@ -84,8 +84,14 @@ def number_to_words(num_str):
         result = number_to_words(str(thousands)) + ' nghìn'
         if remainder == 0:
             return result
+        elif remainder < 10:
+            return result + ' lẻ ' + number_to_words(str(remainder))
         elif remainder < 100:
-            return result + ' không trăm ' + number_to_words(str(remainder))
+            # Common/Southern style often omits "không trăm" for tens, reading "hai nghìn năm mươi" vs "hai nghìn không trăm năm mươi"
+            # However, standard is "không trăm". If user complains, we try removing "không trăm" for smoother reading
+            # But let's check if remainder is exactly equivalent to a tens value (e.g. 50, 20).
+            # If 2050 -> "hai nghìn năm mươi".
+            return result + ' ' + number_to_words(str(remainder)) 
         else:
             return result + ' ' + number_to_words(str(remainder))
     
@@ -126,7 +132,9 @@ def convert_decimal(text):
     
     # Match decimal numbers: X.Y where Y is 1-2 digits, followed by space or end
     # Avoid matching large numbers like 100.000 (thousand separator)
-    text = re.sub(r'(\d+)\.(\d{1,2})(?=\s|$|[^\d])', replace_decimal, text)
+    # Match decimal numbers: X.Y or X,Y where Y is 1-2 digits
+    # Prioritize this before standalone numbers
+    text = re.sub(r'(\d+)[.,](\d{1,2})(?=\s|$|[^\d])', replace_decimal, text)
     return text
 
 
@@ -138,6 +146,32 @@ def convert_percentage(text):
     
     text = re.sub(r'(\d+(?:[.,]\d+)?)\s*%', replace_percent, text)
     return text
+
+
+def replace_common_terms(text):
+    """Replace common terms and abbreviations"""
+    # Technology
+    text = re.sub(r'\bwi[-]?fi\b', 'oai phai', text, flags=re.IGNORECASE)
+    return text
+
+
+def convert_grouped_numbers(text):
+    """
+    Handle numbers with separators like 1,000 or 1.000
+    Ambiguity is resolved by assuming groups of 3 digits are thousands
+    """
+    def replace_group(match):
+        num_str = match.group(0)
+        # Remove separators
+        clean_num = re.sub(r'[.,]', '', num_str)
+        return number_to_words(clean_num)
+    
+    # Match numbers like 1.000, 1.000.000 or 1,000, 1,000,000
+    # Must match at least one separator and exactly 3 digits after it
+    # We use negative lookahead/lookbehind to avoid matching parts of decimals/dates if possible
+    text = re.sub(r'(?<![\d.,])\d{1,3}(?:[.,]\d{3})+(?![\d.,])', replace_group, text)
+    return text
+
 
 
 def convert_currency(text):
@@ -387,16 +421,24 @@ def process_vietnamese_text(text):
     # Step 9: Convert percentages
     text = convert_percentage(text)
     
-    # Step 10: Convert phone numbers
+    # Step 10: Convert common terms (wifi)
+    text = replace_common_terms(text)
+    
+    # Step 11: Convert phone numbers
     text = convert_phone_number(text)
     
-    # Step 11: Convert decimals (before standalone numbers, after currency)
+    # Step 12: Convert grouped numbers (1,000 -> 1000)
+    # Must be before decimals and standalone
+    text = convert_grouped_numbers(text)
+    
+    # Step 13: Convert decimals (before standalone numbers)
+    # Now handles both . and , for decimals
     text = convert_decimal(text)
     
-    # Step 12: Convert remaining standalone numbers
+    # Step 14: Convert remaining standalone numbers
     text = convert_standalone_numbers(text)
     
-    # Step 13: Clean whitespace
+    # Step 15: Clean whitespace
     text = clean_whitespace(text)
     
     return text
