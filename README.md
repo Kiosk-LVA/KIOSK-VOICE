@@ -14,6 +14,17 @@ Vietnamese Text-to-Speech with **Multi-Speaker TTS** and **Zero-Shot Voice Cloni
 - **📦 Multi-speaker TTS**: 5 built-in Vietnamese voices (Northern/Southern, Male/Female)
 - **🔌 Simple API**: `pip install` and use with 2 lines of code
 
+## 🚀 Live Demo — Try it now!
+
+| Demo | Link |
+|------|------|
+| **🎙️ Zero-Shot Voice Cloning** | [▶️ huggingface.co/spaces/valtecAI-team/valtec-zeroshot-voice-cloning](https://huggingface.co/spaces/valtecAI-team/valtec-zeroshot-voice-cloning) |
+| **🔊 Multi-Speaker TTS** | [▶️ huggingface.co/spaces/valtecAI-team/valtec-vietnamese-tts](https://huggingface.co/spaces/valtecAI-team/valtec-vietnamese-tts) |
+
+> Clone any voice from 3-10 seconds of audio. No GPU required. Try it directly in your browser!
+
+**[▶️ Watch Zero-Shot Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20ZeroShot.mp4)**
+
 ---
 
 ## 🎧 Zero-Shot Voice Cloning Examples
@@ -269,33 +280,6 @@ Models are automatically downloaded from Hugging Face and cached:
 
 - Windows: `%LOCALAPPDATA%\valtec_tts\models\`
 - Linux/Mac: `~/.cache/valtec_tts/models/`
-
----
-
-## 🎬 Live Demos
-
-### Web Demo — Browser-based TTS
-
-**[▶️ Watch Web Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20WEB.mp4)**
-
-- Runs entirely in browser using ONNX Runtime Web
-- No backend server required
-- All 5 Vietnamese voices
-- [Full documentation](deployments/web/README.md)
-
-### Android Demo — On-Device TTS
-
-**[▶️ Watch Android Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20Android.mp4)**
-
-- On-device ONNX inference, offline-capable
-- Tested on Xiaomi 12S Pro (Snapdragon 8+ Gen 1)
-- ~200-300ms inference time
-- [Full documentation](deployments/android/README.md)
-
-### HuggingFace Spaces
-
-- **Zero-Shot Voice Cloning**: [valtecAI-team/valtec-zeroshot-voice-cloning](https://huggingface.co/spaces/valtecAI-team/valtec-zeroshot-voice-cloning)
-- **Multi-Speaker TTS**: [valtecAI-team/valtec-vietnamese-tts](https://huggingface.co/spaces/valtecAI-team/valtec-vietnamese-tts)
 
 ---
 
