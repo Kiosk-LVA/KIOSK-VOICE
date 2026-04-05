@@ -12,7 +12,20 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 # Collect underthesea data files (corpus, models)
 underthesea_datas = collect_data_files('underthesea', include_py_files=False)
 datas += underthesea_datas
-hiddenimports += ['underthesea', 'underthesea_core', 'viphoneme', 'vinorm']
+
+# Gruut language data
+gruut_en_datas = collect_data_files('gruut_lang_en', include_py_files=False)
+datas += gruut_en_datas
+
+# Add all missing hidden imports
+hiddenimports += [
+    'underthesea', 'underthesea_core', 'viphoneme', 'vinorm',
+    'eng_to_ipa', 'g2p_en', 'gruut', 'gruut_ipa', 'gruut_lang_en',
+    'cn2an', 'jieba', 'pypinyin', 'jamo', 'num2words', 'inflect',
+    'Unidecode', 'anyascii', 'nltk', 'babel', 'dateparser',
+    'python_crfsuite', 'jsonlines', 'proces', 'distance',
+    'gruut.g2p', 'gruut_ipa', 'gruut_lang_en'
+]
 
 
 a = Analysis(
