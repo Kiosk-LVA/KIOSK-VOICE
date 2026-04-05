@@ -272,7 +272,7 @@ def text_to_phonemes_viphoneme(text: str) -> Tuple[List[str], List[int], List[in
     """
     Convert text to phonemes using viphoneme library.
     Returns (phones, tones, word2ph)
-    
+
     viphoneme output format:
     - Syllables separated by space
     - Compound words joined by underscore: hom1_năj1
@@ -280,23 +280,37 @@ def text_to_phonemes_viphoneme(text: str) -> Tuple[List[str], List[int], List[in
     - Punctuation as separate tokens
     """
     import warnings
-    
+
+    # In frozen/PyInstaller mode, skip vinorm isolation to avoid path issues
+    is_frozen = getattr(sys, 'frozen', False)
+    if is_frozen:
+        os.environ["VIPHONEME_ISOLATE_VINORM"] = "0"
+
     # Call viphoneme (ICU warnings will appear but won't affect results)
     # Note: viphoneme may not work on Windows due to platform-specific binaries
     try:
-        _ensure_vinorm_isolated()
-        workdir = _get_viphoneme_workdir()
-        with _viphoneme_global_lock():
-            cwd = os.getcwd()
-            os.chdir(workdir)
-            try:
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    with _redirect_fds_to_devnull():
-                        ipa_text = vi2IPA(text)
-            finally:
-                os.chdir(cwd)
-    except Exception:
+        if not is_frozen:
+            _ensure_vinorm_isolated()
+            workdir = _get_viphoneme_workdir()
+            with _viphoneme_global_lock():
+                cwd = os.getcwd()
+                os.chdir(workdir)
+                try:
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        with _redirect_fds_to_devnull():
+                            ipa_text = vi2IPA(text)
+                finally:
+                    os.chdir(cwd)
+        else:
+            # Frozen mode: call viphoneme directly without isolation
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                ipa_text = vi2IPA(text)
+    except Exception as e:
+        import traceback
+        print(f"[WARN] Viphoneme failed: {e}")
+        traceback.print_exc()
         # Fallback to char-based on error (e.g., Windows compatibility issues)
         return text_to_phonemes_charbased(text)
     
