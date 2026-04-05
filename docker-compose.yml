@@ -7,9 +7,14 @@ services:
       - "7860:7860"
     volumes:
       - ./outputs:/app/outputs
+      - valtec-models:/root/.cache/valtec_tts
     environment:
       - PYTHONUNBUFFERED=1
+    restart: unless-stopped
     deploy:
       resources:
         limits:
           memory: 4G
+
+volumes:
+  valtec-models:
