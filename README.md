@@ -37,6 +37,41 @@ Vietnamese Text-to-Speech with **Multi-Speaker TTS** and **Zero-Shot Voice Cloni
 
 ---
 
+## 🐳 Chạy bằng Docker (Windows / Mac / Linux)
+
+> **Dành cho mọi hệ điều hành** — Chạy trong Docker, không cần cài đặt Python, cách ly hoàn toàn!
+
+### Yêu cầu:
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) đã cài đặt
+
+### Cách chạy:
+
+**Cách 1: Dùng docker-compose (Khuyến nghị)**
+```bash
+git clone https://github.com/tronghieuit/valtec-tts.git
+cd valtec-tts
+docker-compose up -d
+```
+
+**Cách 2: Dùng Docker trực tiếp**
+```bash
+docker build -t valtec-tts .
+docker run -d -p 7860:7860 --name valtec-tts valtec-tts
+```
+
+Mở trình duyệt: **http://localhost:7860**
+
+### ✨ Tính năng Docker:
+- ✅ **Đa nền tảng** — Windows, macOS, Linux
+- ✅ **Cách ly hoàn toàn** — Không ảnh hưởng hệ thống
+- ✅ **Gradio Web UI** — Giao diện web đẹp, dễ dùng
+- ✅ **Auto-download model** — Tự tải model lần đầu
+- ✅ **5 giọng đọc** — NF, SF, NM1, SM, NM2
+
+> **Lưu ý:** Docker image ~2-3GB do bao gồm PyTorch và dependencies. Lần chạy đầu tiên sẽ tải model từ HuggingFace.
+
+---
+
 ## Highlights
 
 - **🪶 Ultra-lightweight**: 74.8M params — the lightest Vietnamese zero-shot voice clone model
