@@ -139,21 +139,28 @@ class TTS:
         package_root = Path(__file__).parent.parent
         if str(package_root) not in sys.path:
             sys.path.insert(0, str(package_root))
-        
-        from infer import VietnameseTTS, find_latest_checkpoint
-        
+
+        try:
+            from infer import VietnameseTTS, find_latest_checkpoint
+        except ImportError as e:
+            raise ImportError(
+                f"Failed to import infer module: {e}\n"
+                "This usually means you're running the package from outside the project directory.\n"
+                "Please run from the project root or ensure the project is properly set up."
+            ) from e
+
         # Find checkpoint and config
         checkpoint = find_latest_checkpoint(str(self.model_path), "G")
         config_path = self.model_path / "config.json"
-        
+
         if checkpoint is None:
             raise FileNotFoundError(f"No checkpoint found in {self.model_path}")
         if not config_path.exists():
             raise FileNotFoundError(f"config.json not found in {self.model_path}")
-        
+
         print(f"Loading model from: {checkpoint}")
         self._engine = VietnameseTTS(checkpoint, str(config_path), self.device)
-        
+
         # Store speakers
         self.speakers = self._engine.speakers
         self.default_speaker = self.speakers[0] if self.speakers else None

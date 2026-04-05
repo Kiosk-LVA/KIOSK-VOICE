@@ -110,8 +110,8 @@ class VietnameseTTS:
         ).to(self.device)
         
         # Load checkpoint
-        checkpoint = torch.load(checkpoint_path, map_location=self.device)
-        
+        checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=False)
+
         # Handle DDP checkpoint
         state_dict = checkpoint['model']
         new_state_dict = {}
