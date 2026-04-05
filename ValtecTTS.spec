@@ -9,7 +9,13 @@ hiddenimports = ['src', 'src.models.synthesizer', 'src.text.symbols', 'src.vietn
 tmp_ret = collect_all('customtkinter')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
-# Collect underthesea data files (corpus, models)
+# Viphoneme & Vinorm - pure Python packages, just need hiddenimports
+# (no data files needed as they have hardcoded data)
+hiddenimports += ['viphoneme', 'viphoneme.T2IPA', 'viphoneme.syms', 
+                  'viphoneme.text2sequence', 'viphoneme.get_english_sym',
+                  'vinorm', 'vinorm.vinorm']
+
+# Underthesea data files (corpus, models) - NEEDS data files
 underthesea_datas = collect_data_files('underthesea', include_py_files=False)
 datas += underthesea_datas
 
