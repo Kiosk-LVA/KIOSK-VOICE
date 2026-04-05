@@ -281,37 +281,29 @@ def text_to_phonemes_viphoneme(text: str) -> Tuple[List[str], List[int], List[in
     """
     import warnings
 
-    # In frozen/PyInstaller mode, call viphoneme directly without isolation
-    # to avoid path/file access issues
+    # In frozen/PyInstaller mode, use char-based phonemizer directly
+    # to avoid vinorm dependency issues
     is_frozen = getattr(sys, 'frozen', False)
-    
     if is_frozen:
-        # Frozen mode: simple direct call
-        try:
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                ipa_text = vi2IPA(text)
-        except Exception as e:
-            print(f"[WARN] Viphoneme failed in frozen mode: {e}")
-            return text_to_phonemes_charbased(text)
-    else:
-        # Normal mode: use full isolation
-        try:
-            _ensure_vinorm_isolated()
-            workdir = _get_viphoneme_workdir()
-            with _viphoneme_global_lock():
-                cwd = os.getcwd()
-                os.chdir(workdir)
-                try:
-                    with warnings.catch_warnings():
-                        warnings.simplefilter("ignore")
-                        with _redirect_fds_to_devnull():
-                            ipa_text = vi2IPA(text)
-                finally:
-                    os.chdir(cwd)
-        except Exception as e:
-            print(f"[WARN] Viphoneme failed: {e}")
-            return text_to_phonemes_charbased(text)
+        return text_to_phonemes_charbased(text)
+    
+    # Normal mode: use full viphoneme with isolation
+    try:
+        _ensure_vinorm_isolated()
+        workdir = _get_viphoneme_workdir()
+        with _viphoneme_global_lock():
+            cwd = os.getcwd()
+            os.chdir(workdir)
+            try:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    with _redirect_fds_to_devnull():
+                        ipa_text = vi2IPA(text)
+            finally:
+                os.chdir(cwd)
+    except Exception as e:
+        print(f"[WARN] Viphoneme failed: {e}")
+        return text_to_phonemes_charbased(text)
     
     # Check if viphoneme returned empty or invalid result
     if not ipa_text or ipa_text.strip() in ['', '.', '..', '...']:

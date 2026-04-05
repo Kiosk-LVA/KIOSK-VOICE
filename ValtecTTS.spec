@@ -9,16 +9,15 @@ hiddenimports = ['src', 'src.models.synthesizer', 'src.text.symbols', 'src.vietn
 tmp_ret = collect_all('customtkinter')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
-# Viphoneme & Vinorm - pure Python packages, just need hiddenimports
-# (no data files needed as they have hardcoded data)
-# Vinorm needs its data files (Dict/, input.txt, output.txt, etc.)
+# Viphoneme - pure Python package, needs hiddenimports
+hiddenimports += ['viphoneme', 'viphoneme.T2IPA', 'viphoneme.syms', 
+                  'viphoneme.text2sequence', 'viphoneme.get_english_sym']
+
+# Vinorm - collect data files and add submodules explicitly
 vinorm_datas = collect_data_files('vinorm', include_py_files=False)
 datas += vinorm_datas
-
-hiddenimports += ['viphoneme', 'viphoneme.T2IPA', 'viphoneme.syms', 
-                  'viphoneme.text2sequence', 'viphoneme.get_english_sym',
-                  'vinorm', 'vinorm.vinorm', 'vinorm.main', 
-                  'vinorm.Dict', 'vinorm.Mapping', 'vinorm.RegexRule']
+hiddenimports += ['vinorm', 'vinorm.vinorm', 'vinorm.Dict', 'vinorm.Mapping', 
+                  'vinorm.RegexRule', 'vinorm.lib']
 
 # Underthesea data files (corpus, models) - NEEDS data files
 underthesea_datas = collect_data_files('underthesea', include_py_files=False)
