@@ -4,6 +4,39 @@ Vietnamese Text-to-Speech with **Multi-Speaker TTS** and **Zero-Shot Voice Cloni
 
 > **The lightest Vietnamese zero-shot voice cloning model** — only **74.8M parameters**, runs entirely on **CPU**, 3-4x faster than realtime. No GPU required.
 
+> **📅 Cập nhật: Tháng 4/2026** — Đã phát hành phiên bản Windows App (.exe), không cần cài đặt Python hay chạy source code phức tạp!
+
+## 📥 Download Windows App (Khuyến nghị)
+
+> **Dành cho người dùng Windows** — Tải file `.exe`, chạy trực tiếp, không cần cài đặt Python, không lo lỗi source code!
+
+| Phiên bản | Hệ điều hành | Download |
+|-----------|-------------|----------|
+| **v1.0.5** (Mới nhất) | Windows 10/11 (64-bit) | [📥 Tải ValtecTTS.exe (394MB)](https://github.com/tronghieuit/valtec-tts/releases/tag/v1.0.5) |
+
+### ✨ Tính năng Windows App:
+- ✅ **Không cần cài đặt Python** — Chạy trực tiếp file `.exe`
+- ✅ **Không lo lỗi source code** — Đã đóng gói sẵn toàn bộ dependencies
+- ✅ **Giao diện đẹp** — Dark mode hiện đại, dễ sử dụng
+- ✅ **5 giọng đọc có sẵn** — NF, SF, NM1, SM, NM2 (Bắc/Nam, Nam/Nữ)
+- ✅ **Xử lý hàng loạt** — Tạo nhiều audio từ file `.txt`/`.srt`
+- ✅ **Tốc độ tùy chỉnh** — Điều chỉnh từ 0.5x đến 2.0x
+- ✅ **Nghe thử & Lưu file** — Preview và export audio dễ dàng
+
+###  Ảnh chụp ứng dụng:
+
+![Valtec TTS Windows App - Giao diện tiếng Việt](assets/app-screenshot.png)
+
+### 🚀 Hướng dẫn sử dụng:
+1. Tải file `ValtecTTS.exe` từ [Releases](https://github.com/tronghieuit/valtec-tts/releases)
+2. Chạy file `.exe` (lần đầu sẽ tự tải model từ HuggingFace — cần kết nối Internet)
+3. Nhập văn bản tiếng Việt → Chọn giọng đọc → Nhấn "Tạo Audio"
+4. Nghe thử hoặc lưu file `.wav`
+
+> **Lưu ý:** File `.exe` có dung lượng ~394MB do đã bao gồm toàn bộ PyTorch và dependencies. Lần chạy đầu tiên sẽ tải model (~100MB) từ HuggingFace.
+
+---
+
 ## Highlights
 
 - **🪶 Ultra-lightweight**: 74.8M params — the lightest Vietnamese zero-shot voice clone model
