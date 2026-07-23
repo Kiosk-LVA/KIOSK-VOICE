@@ -1,16 +1,16 @@
-package com.valtec.tts
+package com.v.tts
 
 import ai.onnxruntime.*
 import android.content.Context
 import java.nio.FloatBuffer
 
 /**
- * Valtec Vietnamese TTS wrapper for ONNX Runtime.
+ * V-TTS wrapper for ONNX Runtime.
  * 
  * Note: This uses the Generator-only ONNX model.
  * For full TTS, use the API backend approach.
  */
-class ValtecTTS(context: Context) {
+class VTTS(context: Context) {
     
     private var ortEnvironment: OrtEnvironment? = null
     private var ortSession: OrtSession? = null
@@ -27,7 +27,7 @@ class ValtecTTS(context: Context) {
         val modelBytes = context.assets.open(MODEL_PATH).readBytes()
         ortSession = ortEnvironment?.createSession(modelBytes)
         
-        println("ValtecTTS: Model loaded successfully")
+        println("VTTS: Model loaded successfully")
     }
     
     /**
@@ -83,7 +83,7 @@ class ValtecTTS(context: Context) {
     suspend fun synthesizeWithAPI(
         text: String,
         speaker: String = "female",
-        apiUrl: String = "https://valtecai-team-valtec-vietnamese-tts.hf.space/api/synthesize"
+        apiUrl: String = "https://v-tts-v-vietnamese-tts.hf.space/api/synthesize"
     ): ByteArray {
         // TODO: Implement HTTP client to call Gradio API
         // Use OkHttp or Ktor for network requests

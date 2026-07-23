@@ -1,4 +1,4 @@
-package com.valtec.tts
+package com.v.tts
 
 import android.media.AudioAttributes
 import android.media.AudioFormat
@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 
 /**
- * Main Activity for Valtec Vietnamese TTS Demo.
+ * Main Activity for V-TTS Demo.
  */
 class MainActivity : AppCompatActivity() {
     
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var replayButton: Button
     private lateinit var audioDuration: TextView
     
-    private var ttsEngine: ValtecTTSEngine? = null
+    private var ttsEngine: VTTSEngine? = null
     private var audioTrack: AudioTrack? = null
     private var isInitialized = false
     private var lastAudioData: FloatArray? = null  // Store last audio for replay
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         
         replayButton.setOnClickListener {
             lastAudioData?.let { audio ->
-                playAudio(audio, ValtecTTSEngine.SAMPLE_RATE)
+                playAudio(audio, VTTSEngine.SAMPLE_RATE)
                 statusText.text = "🔊 Đang phát lại..."
             }
         }
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                ttsEngine = ValtecTTSEngine(this@MainActivity)
+                ttsEngine = VTTSEngine(this@MainActivity)
                 ttsEngine?.initialize()
                 
                 withContext(Dispatchers.Main) {
@@ -126,11 +126,11 @@ class MainActivity : AppCompatActivity() {
                 ) ?: throw Exception("TTS engine not initialized")
                 
                 val duration = (System.currentTimeMillis() - startTime) / 1000.0
-                val audioDurationSecs = audio.size.toFloat() / ValtecTTSEngine.SAMPLE_RATE
+                val audioDurationSecs = audio.size.toFloat() / VTTSEngine.SAMPLE_RATE
                 
                 withContext(Dispatchers.Main) {
                     lastAudioData = audio  // Store for replay
-                    playAudio(audio, ValtecTTSEngine.SAMPLE_RATE)
+                    playAudio(audio, VTTSEngine.SAMPLE_RATE)
                     progressBar.visibility = android.view.View.GONE
                     statusText.text = "✅ Đã tạo ${audio.size} samples (${String.format("%.2f", duration)}s)"
                     synthesizeButton.isEnabled = true

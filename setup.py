@@ -13,14 +13,14 @@ def read_readme():
     return ""
 
 setup(
-    name="valtec-tts",
+    name="v-tts",
     version="1.0.0",
-    author="Valtec Team",
-    author_email="contact@valtec.com",
+    author="V-TTS",
+    author_email="contact@v-tts",
     description="Vietnamese Text-to-Speech system with simple API and auto-download",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/valtec-tts",
+    url="https://github.com/yourusername/v-tts",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -66,8 +66,8 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "valtec-tts=infer:main",
-            "valtec-tts-demo=demo_gradio:main",
+            "v-tts=infer:main",
+            "v-tts-demo=demo_gradio:main",
         ],
     },
     include_package_data=True,

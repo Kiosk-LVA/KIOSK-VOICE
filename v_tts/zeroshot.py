@@ -1,8 +1,8 @@
 """
-Valtec TTS - Zero-Shot Vietnamese Voice Cloning API
+V-TTS - Zero-Shot Vietnamese Voice Cloning API
 
 Usage:
-    from valtec_tts import ZeroShotTTS
+    from v_tts import ZeroShotTTS
     
     tts = ZeroShotTTS()
     audio, sr = tts.synthesize(
@@ -30,7 +30,7 @@ except ImportError:
     HF_HUB_AVAILABLE = False
 
 
-DEFAULT_ZEROSHOT_HF_REPO = "valtecAI-team/valtec-zeroshot-voice-cloning"
+DEFAULT_ZEROSHOT_HF_REPO = "v-tts/v-zeroshot-voice-cloning"
 DEFAULT_ZEROSHOT_MODEL_NAME = "zeroshot-vietnamese"
 
 
@@ -39,7 +39,7 @@ def _get_cache_dir() -> Path:
         cache_base = Path(os.environ.get('LOCALAPPDATA', Path.home() / 'AppData' / 'Local'))
     else:
         cache_base = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache'))
-    cache_dir = cache_base / 'valtec_tts' / 'models'
+    cache_dir = cache_base / 'v_tts' / 'models'
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
 

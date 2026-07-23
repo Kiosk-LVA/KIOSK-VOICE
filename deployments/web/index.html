@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valtec Vietnamese TTS - Full ONNX Pipeline</title>
+    <title>V-TTS - Full ONNX Pipeline</title>
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.0/dist/ort.min.js"></script>
     <script src="vietnamese_g2p.js"></script>
     <style>
@@ -238,7 +238,7 @@
 
 <body>
     <div class="container">
-        <h1>🎙️ Valtec Vietnamese TTS</h1>
+        <h1>🎙️ V-TTS</h1>
         <p class="subtitle">Full ONNX Pipeline - Chạy trực tiếp trên browser</p>
 
         <div class="mode-indicator mode-loading" id="modeIndicator">⏳ Đang tải models...</div>
@@ -279,7 +279,7 @@
             <audio id="audio" controls></audio>
         </div>
 
-        <div class="footer">Powered by <strong>Valtec AI Team</strong> | ONNX Runtime Web</div>
+        <div class="footer">Powered by <strong>V-TTS</strong> | ONNX Runtime Web</div>
     </div>
 
     <script>
@@ -289,7 +289,7 @@
         let isReady = false;
         let audioContext = null;
 
-        const ONNX_PATH = 'https://huggingface.co/valtecAI-team/valtec-tts-onnx/resolve/main/';
+        const ONNX_PATH = 'https://huggingface.co/v-tts/v-tts-onnx/resolve/main/';
 
         async function loadModels() {
             const indicator = document.getElementById('modeIndicator');

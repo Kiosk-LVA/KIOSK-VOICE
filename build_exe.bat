@@ -1,6 +1,6 @@
 @echo off
 echo ============================================
-echo Valtec TTS - Windows EXE Builder
+echo V-TTS - Windows EXE Builder
 echo ============================================
 echo.
 
@@ -13,7 +13,7 @@ echo (Qua trinh nay co the mat vai phut)
 echo.
 
 :: Use gui_app_modern.py (v2.0) instead of old gui_app.py
-pyinstaller --name "ValtecTTS" ^
+pyinstaller --name "VTTS" ^
     --windowed ^
     --onefile ^
     --collect-all customtkinter ^
@@ -26,9 +26,9 @@ pyinstaller --name "ValtecTTS" ^
     --hidden-import=src.vietnamese ^
     --hidden-import=src.nn ^
     --hidden-import=src.utils ^
-    --hidden-import=valtec_tts ^
+    --hidden-import=v_tts ^
     --add-data "src;src" ^
-    --add-data "valtec_tts;valtec_tts" ^
+    --add-data "v_tts;v_tts" ^
     gui_app_modern.py ^
     --clean
 
@@ -36,7 +36,7 @@ echo.
 echo [3/3] Hoan tat!
 echo ============================================
 echo File EXE da duoc tao trong thu muc 'dist'
-echo Ten file: dist\ValtecTTS.exe
+echo Ten file: dist\VTTS.exe
 echo ============================================
 echo.
 echo LUU Y: Khi chay lan dau, app se tai model tu HuggingFace.

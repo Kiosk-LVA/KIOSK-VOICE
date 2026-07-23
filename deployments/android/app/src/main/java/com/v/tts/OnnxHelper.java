@@ -1,4 +1,4 @@
-package com.valtec.tts;
+package com.v.tts;
 
 import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OnnxTensorLike;

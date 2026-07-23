@@ -1,4 +1,4 @@
-# Valtec Vietnamese TTS - Edge Deployment
+# V-TTS - Edge Deployment
 
 🎙️ **Lightweight Vietnamese Text-to-Speech using ONNX Runtime**
 
@@ -26,7 +26,7 @@ pip install -r requirements.txt
 
 ### 2. Run Inference
 
-Models will be automatically downloaded from [valtecAI-team/valtec-tts-onnx](https://huggingface.co/valtecAI-team/valtec-tts-onnx) on first run.
+Models will be automatically downloaded from [v-tts/v-tts-onnx](https://huggingface.co/v-tts/v-tts-onnx) on first run.
 
 ```bash
 # Basic usage (Southern Female voice)
@@ -82,10 +82,10 @@ sf.write('output.wav', audio, sample_rate)
 ## Model Files
 
 ### Auto-Download (Recommended)
-Models are automatically downloaded from [HuggingFace Hub](https://huggingface.co/valtecAI-team/valtec-tts-onnx) and cached locally:
+Models are automatically downloaded from [HuggingFace Hub](https://huggingface.co/v-tts/v-tts-onnx) and cached locally:
 
-- **Windows**: `%LOCALAPPDATA%\valtec_tts\onnx_models\`
-- **Linux/Mac**: `~/.cache/valtec_tts/onnx_models/`
+- **Windows**: `%LOCALAPPDATA%\v_tts\onnx_models\`
+- **Linux/Mac**: `~/.cache/v_tts/onnx_models/`
 
 ### Manual Download (Optional)
 If you prefer to use local models:
@@ -177,7 +177,7 @@ python inference.py --device cpu
 Ensure all 4 ONNX files exist. The auto-download should handle this, but if it fails:
 ```bash
 # Manually download from HuggingFace
-huggingface-cli download valtecAI-team/valtec-tts-onnx --local-dir ./models
+huggingface-cli download v-tts/v-tts-onnx --local-dir ./models
 python inference.py --model-dir ./models
 ```
 
@@ -187,8 +187,8 @@ python inference.py --model-dir ./models
 
 ## License
 
-This project is part of Valtec TTS. See main repository for license details.
+This project is part of V-TTS. See main repository for license details.
 
 ---
 
-**Powered by Valtec AI Team** | ONNX Runtime
+**Powered by V-TTS** | ONNX Runtime

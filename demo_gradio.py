@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Gradio Demo for Valtec Vietnamese TTS
+Gradio Demo for V-TTS
 A simple web interface for text-to-speech synthesis.
 
 Usage:
@@ -51,7 +51,7 @@ class TTSInterface:
     def __init__(self, checkpoint_path, config_path, device="cuda"):
         print("Loading TTS model...")
         self.tts = VietnameseTTS(checkpoint_path, config_path, device)
-        self.temp_dir = Path(tempfile.gettempdir()) / "valtec_tts_demo"
+        self.temp_dir = Path(tempfile.gettempdir()) / "v_tts_demo"
         self.temp_dir.mkdir(exist_ok=True)
         print("Model loaded successfully!")
     
@@ -103,7 +103,7 @@ def create_demo(tts_interface):
             primary_hue="blue",
             secondary_hue="cyan",
         ),
-        title="Valtec Vietnamese TTS",
+        title="V-TTS",
         css="""
         .gradio-container {
             max-width: 900px !important;
@@ -121,7 +121,7 @@ def create_demo(tts_interface):
         # Header
         gr.Markdown(
             """
-            # <span id="title">🎙️ Valtec Vietnamese TTS</span>
+            # <span id="title">🎙️ V-TTS</span>
             
             ### Hệ thống chuyển văn bản thành giọng nói tiếng Việt
             
@@ -243,7 +243,7 @@ def create_demo(tts_interface):
             """
             ---
             <div style="text-align: center; color: #666; font-size: 0.9em;">
-                Powered by <b>Valtec TTS</b>
+                Powered by <b>V-TTS</b>
             </div>
             """
         )

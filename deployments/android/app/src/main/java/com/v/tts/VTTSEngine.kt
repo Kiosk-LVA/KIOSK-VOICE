@@ -1,4 +1,4 @@
-package com.valtec.tts
+package com.v.tts
 
 import android.content.Context
 import ai.onnxruntime.*
@@ -16,10 +16,10 @@ import kotlin.math.exp
  * Vietnamese TTS Engine using ONNX Runtime on-device inference.
  * Uses OnnxHelper.java to workaround Kotlin type compatibility issues.
  */
-class ValtecTTSEngine(private val context: Context) {
+class VTTSEngine(private val context: Context) {
     
     companion object {
-        private const val TAG = "ValtecTTSEngine"
+        private const val TAG = "VTTSEngine"
         const val SAMPLE_RATE = 24000
     }
     

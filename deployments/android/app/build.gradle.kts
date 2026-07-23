@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.valtec.tts"
+    namespace = "com.v.tts"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.valtec.tts"
+        applicationId = "com.v.tts"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

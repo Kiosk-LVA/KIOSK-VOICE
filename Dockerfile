@@ -1,4 +1,4 @@
-# Valtec Vietnamese TTS - Docker Image
+# V-TTS - Docker Image
 FROM python:3.10-slim
 
 WORKDIR /app

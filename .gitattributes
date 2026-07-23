@@ -1,1 +1,1 @@
-dist/ValtecTTS.exe filter=lfs diff=lfs merge=lfs -text
+dist/VTTS.exe filter=lfs diff=lfs merge=lfs -text

@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ValtecTTS"
+rootProject.name = "VTTS"
 include(":app")

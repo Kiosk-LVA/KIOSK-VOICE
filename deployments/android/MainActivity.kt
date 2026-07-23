@@ -1,4 +1,4 @@
-package com.valtec.tts
+package com.v.tts
 
 import android.media.AudioAttributes
 import android.media.AudioFormat
@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
 
 /**
- * Main Activity for Valtec Vietnamese TTS Demo.
+ * Main Activity for V-TTS Demo.
  */
 class MainActivity : AppCompatActivity() {
     
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                 // For demo, open HF Space in browser
                 val intent = android.content.Intent(
                     android.content.Intent.ACTION_VIEW,
-                    android.net.Uri.parse("https://huggingface.co/spaces/valtecAI-team/valtec-vietnamese-tts")
+                    android.net.Uri.parse("https://huggingface.co/spaces/v-tts/v-vietnamese-tts")
                 )
                 startActivity(intent)
                 

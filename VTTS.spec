@@ -1,9 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all, collect_data_files
 
-datas = [('src', 'src'), ('valtec_tts', 'valtec_tts')]
+datas = [('src', 'src'), ('v_tts', 'v_tts')]
 binaries = []
-hiddenimports = ['src', 'src.models.synthesizer', 'src.text.symbols', 'src.vietnamese.text_processor', 'src.vietnamese.phonemizer', 'src.text', 'src.nn.commons', 'src.nn.mel_processing', 'src.utils.helpers', 'valtec_tts', 'infer']
+hiddenimports = ['src', 'src.models.synthesizer', 'src.text.symbols', 'src.vietnamese.text_processor', 'src.vietnamese.phonemizer', 'src.text', 'src.nn.commons', 'src.nn.mel_processing', 'src.utils.helpers', 'v_tts', 'infer']
 
 # Collect customtkinter data
 tmp_ret = collect_all('customtkinter')
@@ -59,7 +59,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='ValtecTTS',
+    name='VTTS',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

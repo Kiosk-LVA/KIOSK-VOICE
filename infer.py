@@ -246,7 +246,7 @@ def main():
                 from huggingface_hub import snapshot_download
                 
                 # Default HF repo
-                hf_repo = "valtecAI-team/valtec-tts-pretrained"
+                hf_repo = "v-tts/v-tts-pretrained"
                 
                 # Get cache directory
                 if os.name == 'nt':  # Windows
@@ -254,7 +254,7 @@ def main():
                 else:  # Linux/Mac
                     cache_base = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache'))
                 
-                model_dir = cache_base / 'valtec_tts' / 'models' / 'vits-vietnamese'
+                model_dir = cache_base / 'v_tts' / 'models' / 'vits-vietnamese'
                 model_dir.mkdir(parents=True, exist_ok=True)
                 
                 print(f"Downloading model to: {model_dir}")

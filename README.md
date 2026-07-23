@@ -1,4 +1,4 @@
-# Valtec Vietnamese TTS
+# V-TTS
 
 Vietnamese Text-to-Speech with **Multi-Speaker TTS** and **Zero-Shot Voice Cloning**.
 
@@ -12,7 +12,7 @@ Vietnamese Text-to-Speech with **Multi-Speaker TTS** and **Zero-Shot Voice Cloni
 
 | Phiên bản | Hệ điều hành | Download |
 |-----------|-------------|----------|
-| **v1.0.5** (Mới nhất) | Windows 10/11 (64-bit) | [📥 Tải ValtecTTS.exe (394MB)](https://github.com/tronghieuit/valtec-tts/releases/tag/v1.0.5) |
+| **v1.0.5** (Mới nhất) | Windows 10/11 (64-bit) | [📥 Tải VTTS.exe (394MB)](https://github.com/tronghieuit/v-tts/releases/tag/v1.0.5) |
 
 ### ✨ Tính năng Windows App:
 - ✅ **Không cần cài đặt Python** — Chạy trực tiếp file `.exe`
@@ -25,10 +25,10 @@ Vietnamese Text-to-Speech with **Multi-Speaker TTS** and **Zero-Shot Voice Cloni
 
 ###  Ảnh chụp ứng dụng:
 
-![Valtec TTS Windows App - Giao diện tiếng Việt](assets/app-screenshot.png)
+![V-TTS Windows App - Giao diện tiếng Việt](assets/app-screenshot.png)
 
 ### 🚀 Hướng dẫn sử dụng:
-1. Tải file `ValtecTTS.exe` từ [Releases](https://github.com/tronghieuit/valtec-tts/releases)
+1. Tải file `VTTS.exe` từ [Releases](https://github.com/tronghieuit/v-tts/releases)
 2. Chạy file `.exe` (lần đầu sẽ tự tải model từ HuggingFace — cần kết nối Internet)
 3. Nhập văn bản tiếng Việt → Chọn giọng đọc → Nhấn "Tạo Audio"
 4. Nghe thử hoặc lưu file `.wav`
@@ -48,15 +48,15 @@ Vietnamese Text-to-Speech with **Multi-Speaker TTS** and **Zero-Shot Voice Cloni
 
 **Cách 1: Dùng docker-compose (Khuyến nghị)**
 ```bash
-git clone https://github.com/tronghieuit/valtec-tts.git
-cd valtec-tts
+git clone https://github.com/tronghieuit/v-tts.git
+cd v-tts
 docker-compose up -d
 ```
 
 **Cách 2: Dùng Docker trực tiếp**
 ```bash
-docker build -t valtec-tts .
-docker run -d -p 7860:7860 --name valtec-tts valtec-tts
+docker build -t v-tts .
+docker run -d -p 7860:7860 --name v-tts v-tts
 ```
 
 Mở trình duyệt: **http://localhost:7860**
@@ -86,12 +86,12 @@ Mở trình duyệt: **http://localhost:7860**
 
 | Demo | Link |
 |------|------|
-| **🎙️ Zero-Shot Voice Cloning** | [▶️ huggingface.co/spaces/valtecAI-team/valtec-zeroshot-voice-cloning](https://huggingface.co/spaces/valtecAI-team/valtec-zeroshot-voice-cloning) |
-| **🔊 Multi-Speaker TTS** | [▶️ huggingface.co/spaces/valtecAI-team/valtec-vietnamese-tts](https://huggingface.co/spaces/valtecAI-team/valtec-vietnamese-tts) |
+| **🎙️ Zero-Shot Voice Cloning** | [▶️ huggingface.co/spaces/v-tts/v-zeroshot-voice-cloning](https://huggingface.co/spaces/v-tts/v-zeroshot-voice-cloning) |
+| **🔊 Multi-Speaker TTS** | [▶️ huggingface.co/spaces/v-tts/v-vietnamese-tts](https://huggingface.co/spaces/v-tts/v-vietnamese-tts) |
 
 > Clone any voice from 3-10 seconds of audio. No GPU required. Try it directly in your browser!
 
-**[▶️ Watch Zero-Shot Demo Video](https://github.com/tronghieuit/valtec-tts/raw/dev/examples/ValtecTTS%20-%20ZeroShot.mp4)**
+**[▶️ Watch Zero-Shot Demo Video](https://github.com/tronghieuit/v-tts/raw/dev/examples/VTTS%20-%20ZeroShot.mp4)**
 
 ---
 
@@ -159,11 +159,11 @@ Same text, cloned with 6 different reference voices:
 
 ```bash
 # From Git
-pip install git+https://github.com/tronghieuit/valtec-tts.git
+pip install git+https://github.com/tronghieuit/v-tts.git
 
 # From Source
-git clone https://github.com/tronghieuit/valtec-tts.git
-cd valtec-tts
+git clone https://github.com/tronghieuit/v-tts.git
+cd v-tts
 pip install -e .
 ```
 
@@ -181,7 +181,7 @@ pip install -e .
 ### Multi-Speaker TTS (2 lines)
 
 ```python
-from valtec_tts import TTS
+from v_tts import TTS
 
 tts = TTS()  # Auto-downloads model from Hugging Face
 tts.speak("Xin chào các bạn", speaker="NF", output_path="hello.wav")
@@ -196,7 +196,7 @@ print(tts.list_speakers())
 ### Zero-Shot Voice Cloning (2 lines)
 
 ```python
-from valtec_tts import ZeroShotTTS
+from v_tts import ZeroShotTTS
 
 tts = ZeroShotTTS()  # Auto-downloads model, CPU by default
 tts.clone_voice(
@@ -346,16 +346,16 @@ spk_emb_mixed = alpha * spk_emb_1 + (1 - alpha) * spk_emb_2
 
 Models are automatically downloaded from Hugging Face and cached:
 
-- Windows: `%LOCALAPPDATA%\valtec_tts\models\`
-- Linux/Mac: `~/.cache/valtec_tts/models/`
+- Windows: `%LOCALAPPDATA%\v_tts\models\`
+- Linux/Mac: `~/.cache/v_tts/models/`
 
 ---
 
 ## Project Structure
 
 ```
-valtec-tts/
-├── valtec_tts/           # pip install package
+v-tts/
+├── v_tts/           # pip install package
 │   ├── tts.py            # Multi-speaker TTS API
 │   └── zeroshot.py       # Zero-shot voice cloning API
 ├── src/
@@ -397,11 +397,11 @@ See `deployments/` for detailed guides.
 ## Citation
 
 ```bibtex
-@software{valtec_tts,
-  title = {Valtec Vietnamese TTS with Zero-Shot Voice Cloning},
-  author = {ValtecAI Team},
+@software{v_tts,
+  title = {V-TTS with Zero-Shot Voice Cloning},
+  author = {V-TTS},
   year = {2026},
-  url = {https://github.com/tronghieuit/valtec-tts}
+  url = {https://github.com/tronghieuit/v-tts}
 }
 ```
 
@@ -411,5 +411,5 @@ See `deployments/` for detailed guides.
 
 ## Acknowledgments
 
-- Valtec AI Team for model training and development
+- V-TTS for model training and development
 - Vietnamese phonemization community

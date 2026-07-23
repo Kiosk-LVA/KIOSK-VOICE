@@ -1,13 +1,13 @@
 version: '3.8'
 
 services:
-  valtec-tts:
+  v-tts:
     build: .
     ports:
       - "7860:7860"
     volumes:
       - ./outputs:/app/outputs
-      - valtec-models:/root/.cache/valtec_tts
+      - v-tts-models:/root/.cache/v_tts
     environment:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
@@ -17,4 +17,4 @@ services:
           memory: 4G
 
 volumes:
-  valtec-models:
+  v-tts-models:

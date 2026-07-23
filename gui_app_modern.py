@@ -16,7 +16,7 @@ import customtkinter as ctk
 ctk.set_appearance_mode("System")  # Modes: "System", "Dark", "Light"
 ctk.set_default_color_theme("dark-blue")  # Themes: "blue", "green", "dark-blue"
 
-# Thêm thư mục hiện tại vào đường dẫn để import valtec_tts local
+# Thêm thư mục hiện tại vào đường dẫn để import v_tts local
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 # Modern Color Palette
@@ -91,11 +91,11 @@ class IconButton(ctk.CTkButton):
         defaults.update(kwargs)
         super().__init__(master, text=f"{icon}", **defaults)
 
-class ValtecTTSApp(ctk.CTk):
+class VTTSApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        self.title("Valtec TTS - Tiếng Việt")
+        self.title("V-TTS - Tiếng Việt")
         self.geometry("1200x800")
         self.minsize(1000, 700)
         
@@ -150,7 +150,7 @@ class ValtecTTSApp(ctk.CTk):
         
         logo_text = ctk.CTkLabel(
             logo_frame,
-            text="Valtec TTS",
+            text="V-TTS",
             font=ctk.CTkFont(size=20, weight="bold"),
             text_color=COLORS["text_primary"]
         )
@@ -564,7 +564,7 @@ class ValtecTTSApp(ctk.CTk):
     def _load_model(self):
         self.log("🔄 Đang khởi tạo hệ thống TTS...")
         try:
-            from valtec_tts import TTS
+            from v_tts import TTS
             self.tts = TTS()
             self.speakers = self.tts.list_speakers()
             self.after(0, self._on_model_loaded)
@@ -850,5 +850,5 @@ class ValtecTTSApp(ctk.CTk):
         super().destroy()
 
 if __name__ == "__main__":
-    app = ValtecTTSApp()
+    app = VTTSApp()
     app.mainloop()

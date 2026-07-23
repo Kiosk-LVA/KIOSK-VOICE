@@ -52,7 +52,7 @@ def download_onnx_models(model_dir: Optional[str] = None) -> str:
     try:
         from huggingface_hub import snapshot_download
         
-        hf_repo = "valtecAI-team/valtec-tts-onnx"
+        hf_repo = "v-tts/v-tts-onnx"
         
         # Determine cache directory
         if os.name == 'nt':  # Windows
@@ -60,7 +60,7 @@ def download_onnx_models(model_dir: Optional[str] = None) -> str:
         else:  # Linux/Mac
             cache_base = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache'))
         
-        cache_dir = cache_base / 'valtec_tts' / 'onnx_models'
+        cache_dir = cache_base / 'v_tts' / 'onnx_models'
         cache_dir.mkdir(parents=True, exist_ok=True)
         
         print(f"Downloading ONNX models from {hf_repo}...")

@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="🎙️ Valtec Vietnamese TTS"
+        android:text="🎙️ V-TTS"
         android:textSize="24sp"
         android:textColor="#667eea"
         android:textStyle="bold"
@@ -89,7 +89,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Powered by Valtec AI Team"
+        android:text="Powered by V-TTS"
         android:textColor="#666666"
         android:textSize="12sp"
         android:gravity="center"/>

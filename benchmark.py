@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-VALTEC TTS Benchmark Script
+V-TTS Benchmark Script
 Measures inference time on CPU and CUDA, counts model parameters.
 """
 
@@ -13,6 +13,11 @@ from pathlib import Path
 
 import torch
 import numpy as np
+
+# Ensure project root is in path for imports
+project_root = Path(__file__).parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # Local imports
 from src.vietnamese.text_processor import process_vietnamese_text
@@ -54,7 +59,7 @@ def load_model(checkpoint_path, config_path, device):
         **config['model'],
     ).to(device)
     
-    checkpoint = torch.load(checkpoint_path, map_location=device)
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
     state_dict = checkpoint['model']
     new_state_dict = {}
     for k, v in state_dict.items():
@@ -136,8 +141,8 @@ def run_inference(model, inputs, n_runs=10, warmup=3):
         end = time.perf_counter()
         times.append(end - start)
     
-    audio_length = audio.shape[-1] / 44100  # Assume 44.1kHz
-    
+    audio_length = audio.shape[-1] / config['data']['sampling_rate']  # Use actual sample rate
+
     return {
         'times': times,
         'mean': np.mean(times),
@@ -191,7 +196,7 @@ def ensure_model_available(model_dir):
         from huggingface_hub import snapshot_download
         
         # Default HF repo
-        hf_repo = "valtecAI-team/valtec-tts-pretrained"
+        hf_repo = "v-tts/v-tts-pretrained"
         
         # Get cache directory
         if os.name == 'nt':  # Windows
@@ -199,7 +204,7 @@ def ensure_model_available(model_dir):
         else:  # Linux/Mac
             cache_base = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache'))
         
-        model_dir_path = cache_base / 'valtec_tts' / 'models' / 'vits-vietnamese'
+        model_dir_path = cache_base / 'v_tts' / 'models' / 'vits-vietnamese'
         model_dir_path.mkdir(parents=True, exist_ok=True)
         
         print(f"Downloading model to: {model_dir_path}")
@@ -219,7 +224,7 @@ def ensure_model_available(model_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="VALTEC TTS Benchmark")
+    parser = argparse.ArgumentParser(description="V-TTS Benchmark")
     parser.add_argument("--model_dir", type=str, default="./pretrained",
                         help="Model directory")
     parser.add_argument("--n_runs", type=int, default=10,
@@ -252,7 +257,7 @@ def main():
     print(f"Using config: {config_path}")
     
     print("=" * 70)
-    print("VALTEC TTS Benchmark")
+    print("V-TTS Benchmark")
     print("=" * 70)
     
     # System Info

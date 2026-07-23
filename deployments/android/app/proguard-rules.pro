@@ -15,4 +15,4 @@
 -keep class * implements com.google.gson.JsonDeserializer
 
 # Keep TTS classes
--keep class com.valtec.tts.** { *; }
+-keep class com.v.tts.** { *; }

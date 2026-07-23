@@ -1,8 +1,8 @@
 """
-Valtec TTS - Simple Vietnamese Text-to-Speech API
+V-TTS - Simple Vietnamese Text-to-Speech API
 
 Usage:
-    from valtec_tts import TTS
+    from v_tts import TTS
     
     tts = TTS()
     tts.speak("Xin chào các bạn", output_path="output.wav")
@@ -28,7 +28,7 @@ except ImportError:
 
 
 # Default model repository on Hugging Face
-DEFAULT_HF_REPO = "valtecAI-team/valtec-tts-pretrained"
+DEFAULT_HF_REPO = "v-tts/v-tts-pretrained"
 DEFAULT_MODEL_NAME = "vits-vietnamese"
 
 # Local cache directory
@@ -40,7 +40,7 @@ def get_cache_dir() -> Path:
     else:  # Linux/Mac
         cache_base = Path(os.environ.get('XDG_CACHE_HOME', Path.home() / '.cache'))
     
-    cache_dir = cache_base / 'valtec_tts' / 'models'
+    cache_dir = cache_base / 'v_tts' / 'models'
     cache_dir.mkdir(parents=True, exist_ok=True)
     return cache_dir
 

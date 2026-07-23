@@ -1,4 +1,4 @@
-# Valtec Vietnamese TTS - Web Demo
+# V-TTS - Web Demo
 
 🎙️ **Vietnamese Text-to-Speech running entirely in the browser**
 
@@ -8,7 +8,7 @@ Full browser-based TTS using ONNX Runtime Web, no backend server required.
 
 ### 🌐 Live Web Demo
 
-![Web TTS Demo](../../examples/ValtecTTS%20-%20WEB.mp4)
+![Web TTS Demo](../../examples/VTTS%20-%20WEB.mp4)
 
 *Real-time Vietnamese TTS running entirely in browser using ONNX Runtime Web*
 
@@ -19,7 +19,7 @@ Full browser-based TTS using ONNX Runtime Web, no backend server required.
 - ✅ **5 Voice Options**: NF, SF, NM1, SM, NM2 (Northern/Southern, Male/Female)
 - ✅ **ONNX Runtime Web**: WebAssembly-powered inference
 - ✅ **Modern UI**: Beautiful glassmorphism design
-- ✅ **Models from HF Hub**: Download from valtecAI-team/valtec-tts-onnx
+- ✅ **Models from HF Hub**: Download from v-tts/v-tts-onnx
 
 ## Quick Start
 
@@ -28,7 +28,7 @@ Full browser-based TTS using ONNX Runtime Web, no backend server required.
 **Option A: Download from HuggingFace Hub (Recommended)**
 ```bash
 # From project root
-huggingface-cli download valtecAI-team/valtec-tts-onnx --local-dir pretrained/onnx
+huggingface-cli download v-tts/v-tts-onnx --local-dir pretrained/onnx
 ```
 
 **Option B: Export from pretrained model**
@@ -75,7 +75,7 @@ web/
 
 ## Model Files
 
-Models downloaded from [valtecAI-team/valtec-tts-onnx](https://huggingface.co/valtecAI-team/valtec-tts-onnx):
+Models downloaded from [v-tts/v-tts-onnx](https://huggingface.co/v-tts/v-tts-onnx):
 
 | File | Size | Description |
 |------|------|-------------|
@@ -121,4 +121,4 @@ The `vietnamese_g2p.js` file is a JavaScript port of the Python `viphoneme` libr
 
 ---
 
-**Powered by Valtec AI Team** | ONNX Runtime Web
+**Powered by V-TTS** | ONNX Runtime Web
