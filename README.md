@@ -1,41 +1,65 @@
-# Kiosk TTS Service (`kiosk-tts-service`)
+# Kiosk Voice Microservice (`kiosk-voice`)
 
-Dịch vụ Chuyển văn bản thành giọng nói tiếng Việt (Vietnamese Text-to-Speech Streaming Microservice) chuyên dụng cho hệ thống Kiosk bệnh viện, đọc số thứ tự và gọi tên bệnh nhân.
+Microservice tổng hợp giọng nói tiếng Việt tốc độ cao (High-Performance Vietnamese TTS Audio Streaming) chuyên dụng cho hệ thống Kiosk Bệnh viện: đọc số thứ tự, gọi tên bệnh nhân và hướng dẫn vào phòng khám.
 
 ---
 
-## 📐 Sơ đồ kiến trúc sản xuất (Production Architecture Sequence Diagram)
+## 📐 Sơ đồ luồng hoạt động (Sequence Diagram)
+
+Khi **Lễ tân bấm nút gọi bệnh nhân**, Frontend gọi song song 2 API độc lập:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor LeTanFE as FE Quầy Lễ Tân (Lễ Tân bấm gọi)
+    actor LeTanFE as FE Quầy Lễ Tân (Bấm nút Gọi)
     participant Gateway as Kiosk Base / Gateway
     actor TV as Màn Hình TV (Loa PA Trung Tâm)
-    participant TTS as Kiosk TTS Service (:1106)
+    participant Voice as Kiosk Voice Service (:1106)
 
-    Note over LeTanFE,TTS: [KHI LỄ TÂN BẤM GỌI BỆNH NHÂN — 2 API SONG SONG]
+    Note over LeTanFE,Voice: [LỄ TÂN BẤM GỌI BỆNH NHÂN — GỌI SONG SONG 2 API]
 
-    par Gọi đồng thời 2 API
-        LeTanFE->>Gateway: POST /api/... (Kiosk-Base: Thông báo gọi bệnh nhân STT 01)
-        Gateway-->>TV: WebSocket broadcast → TV cập nhật hiển thị "STT 01 - Nguyễn Văn A - Quầy 1"
-    and
-        LeTanFE->>TTS: POST /api/stream (Body: { text, speaker })
-        TTS-->>LeTanFE: 200 OK Stream audio/wav binary (~2.7s hoặc ~2ms nếu Cache HIT)
-        LeTanFE->>TV: Chuyển file WAV sang TV phát qua Loa PA
+    par 1. Cập nhật hiển thị màn hình
+        LeTanFE->>Gateway: POST /api/v1/queue/call (Gọi STT 01 - Quầy 1)
+        Gateway-->>TV: Broadcast WebSocket → TV đổi giao diện: "STT 01 - Nguyễn Văn A - Quầy 1"
+    and 2. Stream âm thanh đọc số thứ tự
+        LeTanFE->>Voice: GET /api/stream?text=Mời bệnh nhân Nguyễn Văn A vào quầy 1
+        Voice-->>LeTanFE: 200 OK (Chunked Audio Stream WAV)
+        Note over Voice,LeTanFE: ⚡ Chunk 1 phát âm thanh ra loa chỉ sau ~350-400ms!
+        LeTanFE->>TV: Chuyển âm thanh ra Loa PA trung tâm
     end
 
-    Note over TV: [TV TỰ XỬ LÝ HÀNG ĐỢI NATIVE HTML5]
-    Note over TV: Nếu 4 quầy cùng bấm → TV nhận 4 WAV vào mảng Playlist JS<br/>Phát xong câu 1 → sự kiện 'audio.onended' → tự phát câu 2 → câu 3 → câu 4
+    Note over TV: [TV TỰ XỬ LÝ HÀNG ĐỢI PLAYLIST NATIVE]
+    Note over TV: Nếu nhiều quầy bấm cùng lúc → TV đưa vào mảng Playlist JS<br/>Phát xong bài 1 → bắt sự kiện 'audio.onended' → tự động phát tiếp bài 2, 3, 4
 ```
 
 ---
 
-## 📡 Danh sách API Endpoints Sản Xuất (Production API Specification)
+## 📡 Danh sách API Specifications
 
-### 🔹 1. Stream Audio API (POST - Ưu tiên sử dụng cho FE/TV)
+### 🔹 1. Stream Audio API (GET — Khuyên dùng cho thẻ HTML5 `<audio>`)
+* **Endpoint:** `GET /api/stream`
+* **Ý nghĩa:** Trả về luồng âm thanh WAV nhị phân (`audio/wav`) phát trực tiếp ra loa. Áp dụng kỹ thuật **Chunk Streaming** giúp phát tiếng chỉ sau **~350-400ms**.
+* **Query Parameters:**
+  * `text` *(String, Bắt buộc)*: Văn bản tiếng Việt cần đọc (Ví dụ: `Mời bệnh nhân Nguyễn Văn A vào quầy số 1`).
+  * `speaker` *(String, Tùy chọn)*: Mã giọng đọc (`NF`, `SF`, `NM1`, `NM2`, `SM`). Mặc định: `NF`.
+
+* **Ví dụ gọi trực tiếp trên Frontend:**
+```javascript
+// Phát âm thanh ra loa lập tức với trễ perceived ~350-400ms!
+const audioUrl = "https://kioskvoice.bvdk333.work/api/stream?text=" + encodeURIComponent("Mời bệnh nhân Nguyễn Văn A vào quầy số 1");
+new Audio(audioUrl).play();
+```
+
+* **Response Headers:**
+  * `Content-Type: audio/wav`
+  * `X-Cache: HIT | MISS`
+  * `X-Streaming: chunked`
+
+---
+
+### 🔹 2. Stream Audio API (POST — Dùng khi gửi JSON Body)
 * **Endpoint:** `POST /api/stream`
-* **Mục đích:** Sinh âm thanh WAV trực tiếp từ câu thoại văn bản. Trả về luồng nhị phân `audio/wav` cực nhanh.
+* **Ý nghĩa:** Tương tự `GET /api/stream`, dùng khi truyền dữ liệu qua JSON Body.
 * **Request Body:**
 ```json
 {
@@ -43,72 +67,61 @@ sequenceDiagram
   "speaker": "NF"
 }
 ```
-* **Response Headers:**
-  * `Content-Type: audio/wav`
-  * `X-Cache: HIT | MISS`
-  * `X-Audio-Duration: 2.90`
-  * `X-Process-Time: 2.20`
+* **Response:** Stream Binary `audio/wav`.
 
 ---
 
-### 🔹 2. Stream Audio API (GET - Dùng cho thẻ HTML `<audio src="...">`)
-* **Endpoint:** `GET /api/stream`
-* **Query Parameters:**
-  * `text`: Văn bản tiếng Việt cần phát âm (ví dụ: `Mời bệnh nhân Nguyễn Văn A vào quầy số 1`)
-  * `speaker`: Giọng đọc (mặc định `NF`)
-* **Ví dụ:**
-```http
-GET /api/stream?text=Mời bệnh nhân Nguyễn Văn A vào quầy số 1&speaker=NF
-```
-
----
-
-### 🔹 3. Danh sách giọng đọc (Speakers)
+### 🔹 3. Danh sách giọng đọc (Speakers List)
 * **Endpoint:** `GET /api/speakers`
-* **Response (Standard Wrapper):**
+* **Ý nghĩa:** Lấy danh sách các mã giọng đọc (speaker IDs) đang sẵn có trên hệ thống.
+* **Response Body (Standard Wrapper Format):**
 ```json
 {
   "success": true,
   "message": "Danh sách giọng đọc sẵn có",
   "data": {
     "defaultSpeaker": "NF",
-    "availableSpeakers": ["NF", "SF", "NM1", "SM", "NM2"]
+    "availableSpeakers": [
+      "NF",
+      "SF",
+      "NM1",
+      "SM",
+      "NM2"
+    ]
   }
 }
 ```
 
 ---
 
-### 🔹 4. Kubernetes Health Probes & Swagger Docs
-
-* **Swagger UI Interactive Docs:** `http://localhost:1106/api-docs` (Có sẵn HTML5 Audio Player ▶️ nghe trực tiếp)
+### 🔹 4. System Health Check & Probes (Kubernetes)
+* **Swagger UI:** `https://kioskvoice.bvdk333.work/api-docs` *(Có sẵn trình phát Audio HTML5 để test trực tiếp)*
 * **Liveness Probe:** `GET /api/health`
 * **Readiness Probe:** `GET /api/health/ready`
 
 ---
 
-## 🎙️ Danh sách 5 giọng đọc (Speaker IDs)
+## 🎙️ Danh sách 5 Giọng Đọc (Speaker IDs)
 
-| Speaker ID | Tên giọng đọc | Mô tả |
-| :--- | :--- | :--- |
-| **`NF`** | Nữ miền Bắc | Giọng nữ Hà Nội chuẩn (Default cho Kiosk Bệnh viện) |
-| **`SF`** | Nữ miền Nam | Giọng nữ Sài Gòn truyền cảm |
-| **`NM1`** | Nam miền Bắc 1 | Giọng nam Hà Nội trầm ấm (Giọng 1) |
-| **`NM2`** | Nam miền Bắc 2 | Giọng nam Hà Nội rõ ràng (Giọng 2) |
-| **`SM`** | Nam miền Nam | Giọng nam Sài Gòn tự nhiên |
+| Speaker ID | Tên Giọng | Vùng Miền | Giới Tính | Mô Tả |
+| :--- | :--- | :--- | :--- | :--- |
+| **`NF`** | Nữ miền Bắc | Miền Bắc | Nữ | Giọng Hà Nội chuẩn (Mặc định cho Kiosk Bệnh viện) |
+| **`SF`** | Nữ miền Nam | Miền Nam | Nữ | Giọng Sài Gòn truyền cảm, dễ nghe |
+| **`NM1`** | Nam miền Bắc 1 | Miền Bắc | Nam | Giọng Nam Hà Nội trầm ấm (Giọng 1) |
+| **`NM2`** | Nam miền Bắc 2 | Miền Bắc | Nam | Giọng Nam Hà Nội rõ ràng (Giọng 2) |
+| **`SM`** | Nam miền Nam | Miền Nam | Nam | Giọng Nam Sài Gòn tự nhiên |
 
 ---
 
-## ⚙️ Biến môi trường (Environment Variables)
+## 📋 Chuẩn định dạng Response (API Standard)
 
-| Variable | Default | Mô tả |
-| :--- | :--- | :--- |
-| `HOST` | `0.0.0.0` | Listen IP |
-| `PORT` | `1106` | Port chạy microservice |
-| `DEVICE` | `cpu` | Thiết bị tính toán (`cpu` hoặc `cuda`) |
-| `DEFAULT_SPEAKER` | `NF` | Giọng đọc mặc định |
-| `DEFAULT_SPEED` | `0.88` | Tốc độ đọc (0.88x = chậm rãi dễ nghe cho người già) |
-| `REDIS_HOST` | `redis.infrastructure.svc.cluster.local` | Hostname Redis Infrastructure trong K3s |
-| `REDIS_PORT` | `6379` | Port Redis |
-| `REDIS_TTL` | `300` | Thời gian lưu audio cache (5 phút) |
-| `CACHE_ENABLED` | `true` | Bật/tắt Redis Audio Cache |
+Tất cả các API JSON của hệ thống tuân thủ theo chuẩn cấu trúc duy nhất:
+
+```json
+{
+  "success": true,
+  "message": "Thông điệp phản hồi",
+  "data": { ... }
+}
+```
+*(Các API `/api/stream` trả về trực tiếp luồng nhị phân `audio/wav`).*
