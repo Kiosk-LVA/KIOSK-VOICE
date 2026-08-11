@@ -22,6 +22,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/yourusername/v-tts",
     packages=find_packages(),
+    py_modules=["infer"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",

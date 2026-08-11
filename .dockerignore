@@ -22,7 +22,6 @@ wheels/
 .installed.cfg
 
 # Dev/test scripts (not needed in production)
-infer.py
 download_model.py
 setup.py
 test_*.py
