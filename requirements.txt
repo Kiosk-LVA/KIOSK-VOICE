@@ -20,6 +20,9 @@ underthesea==8.3.0
 vinorm==2.0.7
 huggingface_hub>=0.20.0
 eng-to-ipa==0.0.2
+setuptools
+numba
+transformers
 
 # --- Web & API Server Dependencies ---
 fastapi==0.115.0
