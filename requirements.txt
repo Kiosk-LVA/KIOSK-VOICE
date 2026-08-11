@@ -20,7 +20,7 @@ underthesea==8.3.0
 vinorm==2.0.7
 huggingface_hub>=0.20.0
 eng-to-ipa==0.0.2
-setuptools
+setuptools<70.0.0
 numba
 transformers
 

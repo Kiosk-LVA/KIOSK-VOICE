@@ -29,6 +29,20 @@ except ImportError:
     imp.reload = importlib.reload
     sys.modules['imp'] = imp
 
+# Polyfill pkg_resources for legacy 'librosa' package compatibility
+try:
+    import pkg_resources
+except ImportError:
+    import importlib.resources
+    pkg_resources = types.ModuleType('pkg_resources')
+    def _resource_filename(package_or_requirement, resource_name):
+        try:
+            return str(importlib.resources.files(package_or_requirement) / resource_name)
+        except Exception:
+            return resource_name
+    pkg_resources.resource_filename = _resource_filename
+    sys.modules['pkg_resources'] = pkg_resources
+
 # Force UTF-8 default encoding for open() calls on Windows
 import builtins
 _orig_open = builtins.open

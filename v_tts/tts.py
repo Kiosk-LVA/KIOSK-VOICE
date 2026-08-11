@@ -140,6 +140,22 @@ class TTS:
         if str(package_root) not in sys.path:
             sys.path.insert(0, str(package_root))
 
+        # Polyfill pkg_resources for librosa compatibility if setuptools 70+ removed it
+        if "pkg_resources" not in sys.modules:
+            try:
+                import pkg_resources
+            except ImportError:
+                import importlib.resources
+                import types
+                pr = types.ModuleType("pkg_resources")
+                def _rf(pkg, fname):
+                    try:
+                        return str(importlib.resources.files(pkg) / fname)
+                    except Exception:
+                        return fname
+                pr.resource_filename = _rf
+                sys.modules["pkg_resources"] = pr
+
         try:
             from infer import VietnameseTTS, find_latest_checkpoint
         except ImportError as e:
