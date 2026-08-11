@@ -75,7 +75,11 @@ app = FastAPI(
     docs_url="/api-docs",
     redoc_url=None,
     openapi_url="/api-docs/openapi.json",
-    lifespan=lifespan
+    lifespan=lifespan,
+    servers=[
+        {"url": "http://localhost:1106", "description": "Local Development"},
+        {"url": "https://kioskvoice.bvdk333.work", "description": "Production"},
+    ]
 )
 
 # CORS setup for Web Browser & Kiosk Frontends
