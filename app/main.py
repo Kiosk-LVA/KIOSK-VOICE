@@ -213,30 +213,17 @@ def _process_tts_request(text: str, speaker: Optional[str]):
             }
         )
 
-    logger.info(f"Synthesizing audio for text: '{clean_text[:25]}...' [speaker={selected_speaker}]")
-    try:
-        wav_bytes, duration_sec, process_time_sec = engine_manager.synthesize_wav(
+    # 2. Cache MISS: Low-latency Chunk Streaming (~400ms first audio byte)
+    logger.info(f"Cache MISS for text: '{clean_text[:25]}...' [speaker={selected_speaker}] -> Initiating Chunk Streaming")
+    return StreamingResponse(
+        engine_manager.synthesize_stream_generator(
             text=clean_text,
             speaker=selected_speaker,
-        )
-    except Exception as e:
-        logger.error(f"TTS synthesis error: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to synthesize audio: {str(e)}"
-        )
-
-    # 3. Save to Redis Cache
-    cache_manager.set_audio(clean_text, selected_speaker, settings.DEFAULT_SPEED, wav_bytes)
-
-    # 4. Stream response
-    return StreamingResponse(
-        io.BytesIO(wav_bytes),
+        ),
         media_type="audio/wav",
         headers={
             "X-Cache": "MISS",
-            "X-Audio-Duration": f"{duration_sec:.2f}",
-            "X-Process-Time": f"{process_time_sec:.3f}",
+            "X-Streaming": "chunked",
             "Content-Disposition": 'inline; filename="speech.wav"'
         }
     )
