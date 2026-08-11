@@ -16,11 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
+RUN pip install --no-cache-dir --upgrade pip wheel setuptools && \
+    pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --upgrade pip wheel setuptools && \
-    pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 FROM python:3.10-slim-bookworm AS runner
 
@@ -42,12 +43,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN addgroup --system --gid 10001 kiosk && \
     adduser --system --uid 10001 --ingroup kiosk --home /app kiosk
 
-COPY --from=builder --chown=kiosk:kiosk /opt/venv /opt/venv
-
-COPY --chown=kiosk:kiosk . /app
-
 RUN mkdir -p /app/models /app/outputs && \
     chown -R kiosk:kiosk /app
+
+COPY --from=builder --chown=kiosk:kiosk /opt/venv /opt/venv
+COPY --chown=kiosk:kiosk . /app
 
 USER kiosk
 
