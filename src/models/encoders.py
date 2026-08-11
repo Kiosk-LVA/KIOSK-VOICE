@@ -8,8 +8,12 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torchaudio
-import torchaudio.transforms as T
+try:
+    import torchaudio
+    import torchaudio.transforms as T
+except Exception:
+    torchaudio = None
+    T = None
 from torch.nn.utils import weight_norm
 
 # ============================================================================

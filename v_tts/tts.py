@@ -28,7 +28,7 @@ except ImportError:
 
 
 # Default model repository on Hugging Face
-DEFAULT_HF_REPO = "v-tts/v-tts-pretrained"
+DEFAULT_HF_REPO = "letrggghieu/v-tts-pretrained"
 DEFAULT_MODEL_NAME = "vits-vietnamese"
 
 # Local cache directory

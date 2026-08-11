@@ -1,36 +1,58 @@
-# V-TTS - Docker Image
-FROM python:3.10-slim
+FROM python:3.10-slim-bookworm AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libsndfile1-dev \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --upgrade pip wheel setuptools && \
+    pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir -r requirements.txt
+
+FROM python:3.10-slim-bookworm AS runner
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    HOME="/app"
 
 WORKDIR /app
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
     libsndfile1 \
-    git \
+    ffmpeg \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+RUN addgroup --system --gid 10001 kiosk && \
+    adduser --system --uid 10001 --ingroup kiosk --home /app kiosk
 
-# Install Python dependencies
-# Install CPU-only PyTorch first, then other requirements (excluding torch from requirements)
-RUN pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir $(grep -v '^torch' requirements.txt | grep -v '^torchaudio') && \
-    pip install --no-cache-dir gradio==5.38.0
+COPY --from=builder --chown=kiosk:kiosk /opt/venv /opt/venv
 
-# Copy application code
-COPY . .
+COPY --chown=kiosk:kiosk . /app
 
-# Create outputs directory
-RUN mkdir -p /app/outputs
+RUN mkdir -p /app/models /app/outputs && \
+    chown -R kiosk:kiosk /app
 
-# Expose Gradio port
-EXPOSE 7860
+USER kiosk
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:7860')" || exit 1
+EXPOSE 1106
 
-# Default command - run Gradio demo
-CMD ["python", "app.py"]
+HEALTHCHECK --interval=20s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:1106/api/health || exit 1
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "1106"]

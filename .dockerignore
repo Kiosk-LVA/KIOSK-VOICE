@@ -1,31 +1,62 @@
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-.env
-.venv
+*.pyo
+
+# Virtual environments
+.venv/
 venv/
 ENV/
-.pytest_cache/
-*.log
+env/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+eggs/
+wheels/
+*.egg
+.installed.cfg
+
+# Dev/test scripts (not needed in production)
+infer.py
+download_model.py
+setup.py
+test_*.py
+
+# Docs
+README.md
+LICENSE
+
+# Local model files (mounted via PersistentVolume in K3s — NOT baked into image)
+models/
+
+# Audio output files
 outputs/
 *.wav
 *.mp3
-pretrained/*.pth
-pretrained/zeroshot/*.pth
+
+# Secrets & env
+.env
+*.env
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# Pytest
+.pytest_cache/
+*.log

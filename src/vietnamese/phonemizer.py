@@ -302,8 +302,13 @@ def text_to_phonemes_viphoneme(text: str) -> Tuple[List[str], List[int], List[in
             finally:
                 os.chdir(cwd)
     except Exception as e:
-        print(f"[WARN] Viphoneme failed: {e}")
-        return text_to_phonemes_charbased(text)
+        # Fallback to pure Python viphoneme.T2IPA if vi2IPA fails (e.g. on Windows where vinorm Linux binary cannot run)
+        try:
+            from viphoneme import T2IPA
+            ipa_text = T2IPA(text)
+        except Exception as e2:
+            print(f"[WARN] Viphoneme T2IPA failed: {e2}")
+            return text_to_phonemes_charbased(text)
     
     # Check if viphoneme returned empty or invalid result
     if not ipa_text or ipa_text.strip() in ['', '.', '..', '...']:

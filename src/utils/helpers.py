@@ -7,7 +7,10 @@ import subprocess
 import numpy as np
 from scipy.io.wavfile import read
 import torch
-import torchaudio
+try:
+    import torchaudio
+except Exception:
+    torchaudio = None
 import librosa
 from src.text import cleaned_text_to_sequence
 from src.text.cleaner import clean_text

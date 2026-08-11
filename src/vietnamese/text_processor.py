@@ -383,6 +383,19 @@ def normalize_punctuation(text):
     return text
 
 
+def auto_punctuate_kiosk_announcement(text: str) -> str:
+    """
+    Automatically inserts natural pause commas for hospital kiosk announcements if missing.
+    Example: 'Mời bệnh nhân Nguyễn Văn A vào phòng khám số 3' -> 'Mời bệnh nhân, Nguyễn Văn A, vào phòng khám số 3'
+    """
+    pattern = r'^(mời\s+bệnh\s+nhân)\s+([^,]+?)\s+(vào|sang|đến|tới)\s+(phòng\s+.*)$'
+    match = re.match(pattern, text, flags=re.IGNORECASE)
+    if match:
+        prefix, name, verb, room = match.groups()
+        return f"{prefix}, {name.strip()}, {verb} {room.strip()}"
+    return text
+
+
 def process_vietnamese_text(text):
     """
     Main function to process Vietnamese text for TTS.
@@ -394,6 +407,9 @@ def process_vietnamese_text(text):
     Returns:
         Normalized text suitable for TTS
     """
+    # Step 0: Auto-insert pause commas for hospital kiosk announcements
+    text = auto_punctuate_kiosk_announcement(text)
+
     # Step 1: Normalize Unicode
     text = normalize_unicode(text)
     
