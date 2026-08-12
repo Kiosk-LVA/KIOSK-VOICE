@@ -297,7 +297,9 @@ def convert_ordinal(text):
         return prefix + ' ' + number_to_words(num)
     
     # thứ X, lần X, bước X, phần X
-    text = re.sub(r'(thứ|lần|bước|phần|chương|tập|số)\s*(\d+)', replace_ordinal, text, flags=re.IGNORECASE)
+    # Lưu ý: 'số' bị loại khỏi đây vì trong ngữ cảnh Kiosk bệnh viện,
+    # "số 4" (số phòng, số thứ tự) phải đọc là "số bốn", không phải "số tư"
+    text = re.sub(r'(thứ|lần|bước|phần|chương|tập)\s*(\d+)', replace_ordinal, text, flags=re.IGNORECASE)
     
     return text
 
