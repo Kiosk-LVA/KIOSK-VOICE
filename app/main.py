@@ -88,6 +88,16 @@ async def lifespan(app: FastAPI):
 
     cache_manager.connect()
     engine_manager.load_model()
+
+    # Kiosk Pre-Warm Cache — chạy nền sau khi server đã sẵn sàng
+    if settings.CACHE_ENABLED and settings.REDIS_HOST:
+        import asyncio
+        async def _run_prewarm():
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, engine_manager.prewarm_kiosk_cache)
+        asyncio.create_task(_run_prewarm())
+        logger.info("Kiosk pre-warm cache task scheduled (background)")
+
     yield
     # Shutdown
     logger.info("Shutting down Kiosk TTS Service...")
@@ -140,9 +150,9 @@ class TTSRequest(BaseModel):
             "- **NM1** — Nam miền Bắc, giọng 1 (Male, Northern accent, voice 1) \n"
             "- **NM2** — Nam miền Bắc, giọng 2 (Male, Northern accent, voice 2) \n"
             "- **SM** — Nam miền Nam (Male, Southern accent) \n\n"
-            "Mặc định server dùng **NF** nếu không truyền."
+            "Mặc định server dùng **SF** nếu không truyền."
         ),
-        example=SpeakerID.NF
+        example=SpeakerID.SF
     )
 
 class SpeakersResponse(BaseModel):
@@ -273,6 +283,35 @@ def stream_audio_get(
 @app.post("/api/stream", tags=["TTS"], responses=AUDIO_RESPONSES, response_class=StreamingResponse)
 def stream_audio_post(body: TTSRequest):
     return _process_tts_request(text=body.text, speaker=body.speaker)
+
+@app.get("/api/stream/kiosk", tags=["TTS"], responses=AUDIO_RESPONSES, response_class=StreamingResponse)
+def stream_kiosk(
+    stt: int = Query(..., description="Số thứ tự bệnh nhân", example=47, ge=1),
+    counter: int = Query(..., description="Số quầy lễ tân", example=3, ge=1),
+    speaker: Optional[SpeakerID] = Query(default=None, description="Giọng đọc (mặc định dùng DEFAULT_SPEAKER)"),
+):
+    """
+    **API Kiosk tối ưu hóa** — Gọi bệnh nhân theo số thứ tự và số quầy.
+
+    Câu thoại được tổng hợp: `"Mời bệnh nhân số {stt}, vào quầy lễ tân số {counter}"`
+
+    Các chunk âm thanh được **pre-warm sẵn trong Redis** khi server khởi động
+    → Phản hồi âm thanh trong **~5ms** thay vì ~400ms.
+    """
+    if not engine_manager.is_ready():
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="TTS Engine chưa sẵn sàng")
+    return StreamingResponse(
+        engine_manager.synthesize_kiosk_stream_generator(
+            stt=stt,
+            counter=counter,
+            speaker=speaker,
+        ),
+        media_type="audio/wav",
+        headers={
+            "X-Cache": "KIOSK",
+            "Content-Disposition": 'inline; filename="speech.wav"'
+        }
+    )
 
 if __name__ == "__main__":
     import uvicorn

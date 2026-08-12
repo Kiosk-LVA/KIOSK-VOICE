@@ -64,4 +64,20 @@ class AudioCacheManager:
             logger.warning(f"Redis SET error: {e}")
             return False
 
+    def set_audio_with_ttl(self, text: str, speaker: str, speed: float, audio_bytes: bytes, ttl: int) -> bool:
+        """Lưu audio với TTL tùy chỉnh. ttl=0 nghĩa là không bao giờ hết hạn (persist)."""
+        if not self._is_connected or self.redis_client is None:
+            return False
+        try:
+            key = self._generate_key(text, speaker, speed)
+            if ttl == 0:
+                self.redis_client.set(key, audio_bytes)  # Không TTL — tồn tại vĩnh viễn
+            else:
+                self.redis_client.setex(key, ttl, audio_bytes)
+            logger.debug(f"Cache SET (TTL={'∞' if ttl == 0 else ttl}s) for key: {key}")
+            return True
+        except Exception as e:
+            logger.warning(f"Redis SET error: {e}")
+            return False
+
 cache_manager = AudioCacheManager()

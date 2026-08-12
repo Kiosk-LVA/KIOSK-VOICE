@@ -159,19 +159,39 @@ class TTSEngineManager:
 
         for idx, chunk_text in enumerate(chunks):
             chunk_start = time.time()
-            audio_array, sr = self.tts.synthesize(
-                text=chunk_text,
-                speaker=target_speaker,
-                speed=target_speed,
-            )
-            sample_rate = sr
+
+            # Kiểm tra chunk-level cache trước (pre-warm hoặc từ lần synthesis trước)
+            cached_chunk_wav = cache_manager.get_audio(chunk_text, target_speaker, target_speed)
+            if cached_chunk_wav:
+                # Đọc PCM từ WAV bytes (bỏ qua 44-byte WAV header)
+                pcm_bytes = cached_chunk_wav[44:]
+                audio_array = np.frombuffer(pcm_bytes, dtype=np.int16).astype(np.float32) / 32767.0
+                sample_rate = 24000
+                logger.debug(f"Chunk {idx+1}/{len(chunks)} cache HIT: '{chunk_text[:20]}' (~1ms)")
+            else:
+                audio_array, sr = self.tts.synthesize(
+                    text=chunk_text,
+                    speaker=target_speaker,
+                    speed=target_speed,
+                )
+                sample_rate = sr
+
+                if len(audio_array) > 0:
+                    # Peak normalization to 0.98
+                    max_val = np.max(np.abs(audio_array))
+                    if max_val > 0:
+                        audio_array = (audio_array / max_val) * 0.98
+
+                # Lưu chunk vào cache để pre-warm hoặc lần sau dùng lại
+                if len(audio_array) > 0:
+                    chunk_byte_io = io.BytesIO()
+                    sf.write(chunk_byte_io, audio_array, sample_rate, format='WAV', subtype='PCM_16')
+                    cache_manager.set_audio_with_ttl(
+                        chunk_text, target_speaker, target_speed,
+                        chunk_byte_io.getvalue(), settings.KIOSK_CACHE_TTL
+                    )
 
             if len(audio_array) > 0:
-                # Peak normalization to 0.98
-                max_val = np.max(np.abs(audio_array))
-                if max_val > 0:
-                    audio_array = (audio_array / max_val) * 0.98
-
                 # 5ms crossfade on edges to prevent pop/click artifacts (120 samples @ 24kHz)
                 fade_len = min(120, len(audio_array) // 2)
                 if fade_len > 0:
@@ -193,7 +213,13 @@ class TTSEngineManager:
 
                 yield pcm_bytes
                 chunk_time = time.time() - chunk_start
-                logger.debug(f"Chunk {idx+1}/{len(chunks)} synthesized in {chunk_time*1000:.1f}ms")
+                logger.debug(f"Chunk {idx+1}/{len(chunks)} done in {chunk_time*1000:.1f}ms")
+
+                # Chèn silence giữa các chunk (trừ chunk cuối)
+                if idx < len(chunks) - 1 and settings.CHUNK_PAUSE_MS > 0:
+                    silence_samples = int(sample_rate * settings.CHUNK_PAUSE_MS / 1000)
+                    all_audio_segments.append(np.zeros(silence_samples, dtype=np.float32))
+                    yield bytes(silence_samples * 2)  # Int16 = 2 bytes/sample, toàn số 0
 
         total_process_time = time.time() - start_time
 
@@ -265,5 +291,154 @@ class TTSEngineManager:
         wav_bytes = byte_io.read()
 
         return wav_bytes, audio_duration, process_time
+
+    def _synthesize_chunk_wav(self, text: str, speaker: str) -> bytes:
+        """
+        Tổng hợp một đoạn text ngắn thành WAV bytes trong bộ nhớ.
+        Dùng nội bộ cho pre-warm và kiosk streaming.
+        """
+        from src.vietnamese.text_processor import process_vietnamese_text
+        norm_text = process_vietnamese_text(text)
+        audio_array, sample_rate = self.tts.synthesize(
+            text=norm_text,
+            speaker=speaker,
+            speed=settings.DEFAULT_SPEED,
+        )
+        if len(audio_array) > 0:
+            max_val = np.max(np.abs(audio_array))
+            if max_val > 0:
+                audio_array = (audio_array / max_val) * 0.98
+        byte_io = io.BytesIO()
+        sf.write(byte_io, audio_array, sample_rate, format='WAV', subtype='PCM_16')
+        return byte_io.getvalue()
+
+    def prewarm_kiosk_cache(self, speaker: Optional[str] = None) -> None:
+        """
+        Pre-warm Redis cache cho tất cả các chunk Kiosk cố định:
+        - "Mời bệnh nhân số 1" → "Mời bệnh nhân số N" (N = KIOSK_MAX_STT)
+        - "vào quầy lễ tân số 1" → "vào quầy lễ tân số N" (N = KIOSK_MAX_COUNTER)
+        Bỏ qua chunk nào đã tồn tại trong cache (safe to call on restart).
+        """
+        if not self.tts:
+            logger.warning("Kiosk pre-warm skipped: TTS engine not ready")
+            return
+
+        target_speaker = speaker or settings.DEFAULT_SPEAKER
+        speed = settings.DEFAULT_SPEED
+        ttl = settings.KIOSK_CACHE_TTL  # 0 = không TTL (vĩnh viễn)
+
+        logger.info(
+            f"🔥 Kiosk pre-warm bắt đầu: STT 1→{settings.KIOSK_MAX_STT}, "
+            f"Quầy 1→{settings.KIOSK_MAX_COUNTER}, speaker={target_speaker}, TTL={'∞' if ttl == 0 else f'{ttl}s'}"
+        )
+        total_start = time.time()
+        skipped = 0
+        synthesized = 0
+
+        # --- Phase 1: Pre-warm số quầy (ưu tiên cao, số lượng ít) ---
+        for counter in range(1, settings.KIOSK_MAX_COUNTER + 1):
+            chunk_text = f"vào quầy lễ tân số {counter}"
+            cached = cache_manager.get_audio(chunk_text, target_speaker, speed)
+            if cached:
+                skipped += 1
+                continue
+            try:
+                wav_bytes = self._synthesize_chunk_wav(chunk_text, target_speaker)
+                cache_manager.set_audio_with_ttl(chunk_text, target_speaker, speed, wav_bytes, ttl)
+                synthesized += 1
+            except Exception as e:
+                logger.warning(f"Pre-warm quầy {counter} thất bại: {e}")
+
+        logger.info(f"✅ Pre-warm số quầy xong: {synthesized} tổng hợp mới, {skipped} đã có trong cache")
+
+        # --- Phase 2: Pre-warm STT bệnh nhân (chạy background, số lượng nhiều hơn) ---
+        skipped_stt = 0
+        synthesized_stt = 0
+        for stt in range(1, settings.KIOSK_MAX_STT + 1):
+            chunk_text = f"Mời bệnh nhân số {stt}"
+            cached = cache_manager.get_audio(chunk_text, target_speaker, speed)
+            if cached:
+                skipped_stt += 1
+                continue
+            try:
+                wav_bytes = self._synthesize_chunk_wav(chunk_text, target_speaker)
+                cache_manager.set_audio_with_ttl(chunk_text, target_speaker, speed, wav_bytes, ttl)
+                synthesized_stt += 1
+            except Exception as e:
+                logger.warning(f"Pre-warm STT {stt} thất bại: {e}")
+
+        elapsed = time.time() - total_start
+        logger.info(
+            f"🎉 Kiosk pre-warm hoàn tất trong {elapsed:.1f}s | "
+            f"STT: {synthesized_stt} mới / {skipped_stt} đã có | "
+            f"Quầy: đã xong ở Phase 1"
+        )
+
+    def synthesize_kiosk_stream_generator(
+        self,
+        stt: int,
+        counter: int,
+        speaker: Optional[str] = None,
+    ):
+        """
+        Stream âm thanh cho câu Kiosk: "Mời bệnh nhân số {stt}, vào quầy lễ tân số {counter}"
+        Lấy từng phần từ Redis cache (nếu có) để đạt độ trễ ~5ms.
+        Fallback về synthesis bình thường nếu cache miss.
+        """
+        if not self.tts:
+            raise RuntimeError("TTS Engine is not initialized")
+
+        target_speaker = speaker or settings.DEFAULT_SPEAKER
+        speed = settings.DEFAULT_SPEED
+        sample_rate = 24000
+
+        chunk_stt     = f"Mời bệnh nhân số {stt}"
+        chunk_counter = f"vào quầy lễ tân số {counter}"
+
+        logger.info(f"Kiosk stream: STT={stt}, quầy={counter}, speaker={target_speaker}")
+
+        header_sent = False
+        all_segments = []
+
+        for chunk_text in [chunk_stt, chunk_counter]:
+            # Thử lấy từ cache trước
+            cached_wav = cache_manager.get_audio(chunk_text, target_speaker, speed)
+            if cached_wav:
+                logger.debug(f"Cache HIT kiosk chunk: '{chunk_text}'")
+                # Đọc PCM data từ WAV bytes (bỏ qua 44-byte WAV header)
+                pcm_bytes = cached_wav[44:]
+                audio_array = np.frombuffer(pcm_bytes, dtype=np.int16).astype(np.float32) / 32767.0
+            else:
+                logger.debug(f"Cache MISS kiosk chunk: '{chunk_text}' → synthesis")
+                from src.vietnamese.text_processor import process_vietnamese_text
+                norm_text = process_vietnamese_text(chunk_text)
+                audio_array, sample_rate = self.tts.synthesize(
+                    text=norm_text,
+                    speaker=target_speaker,
+                    speed=speed,
+                )
+                if len(audio_array) > 0:
+                    max_val = np.max(np.abs(audio_array))
+                    if max_val > 0:
+                        audio_array = (audio_array / max_val) * 0.98
+                # Lưu vào cache để lần sau dùng lại
+                wav_bytes = self._synthesize_chunk_wav(chunk_text, target_speaker)
+                cache_manager.set_audio_with_ttl(
+                    chunk_text, target_speaker, speed, wav_bytes,
+                    settings.KIOSK_CACHE_TTL
+                )
+
+            if len(audio_array) > 0:
+                # Crossfade 5ms để chống pop/click khi ghép chunk
+                fade_len = min(120, len(audio_array) // 2)
+                if fade_len > 0:
+                    audio_array[:fade_len]  *= np.linspace(0.0, 1.0, fade_len)
+                    audio_array[-fade_len:] *= np.linspace(1.0, 0.0, fade_len)
+                all_segments.append(audio_array)
+                pcm_bytes = (audio_array * 32767).astype(np.int16).tobytes()
+                if not header_sent:
+                    yield create_wav_header(sample_rate=sample_rate)
+                    header_sent = True
+                yield pcm_bytes
 
 engine_manager = TTSEngineManager()

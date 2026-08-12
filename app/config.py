@@ -30,4 +30,10 @@ class Settings:
     TORCH_COMPILE: bool = os.getenv("TORCH_COMPILE", "false").lower() in ("true", "1", "yes")
     PURE_PYTHON_PHONEMIZER: bool = os.getenv("PURE_PYTHON_PHONEMIZER", "true").lower() in ("true", "1", "yes")
 
+    # Kiosk Pre-Warm Cache Settings
+    KIOSK_MAX_STT: int = int(os.getenv("KIOSK_MAX_STT", "200"))       # Pre-warm STT bệnh nhân từ 1 → N
+    KIOSK_MAX_COUNTER: int = int(os.getenv("KIOSK_MAX_COUNTER", "20")) # Pre-warm số quầy từ 1 → N
+    KIOSK_CACHE_TTL: int = int(os.getenv("KIOSK_CACHE_TTL", "0"))  # TTL cho chunk Kiosk: 0 = không bao giờ hết hạn
+    CHUNK_PAUSE_MS: int = int(os.getenv("CHUNK_PAUSE_MS", "500"))       # Khoảng ngắt im lặng giữa các chunk (ms)
+
 settings = Settings()
