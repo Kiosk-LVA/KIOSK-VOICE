@@ -287,28 +287,40 @@ def text_to_phonemes_viphoneme(text: str) -> Tuple[List[str], List[int], List[in
     if is_frozen:
         return text_to_phonemes_charbased(text)
     
-    # Normal mode: use full viphoneme with isolation
-    try:
-        _ensure_vinorm_isolated()
-        workdir = _get_viphoneme_workdir()
-        with _viphoneme_global_lock():
-            cwd = os.getcwd()
-            os.chdir(workdir)
-            try:
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    with _redirect_fds_to_devnull():
-                        ipa_text = vi2IPA(text)
-            finally:
-                os.chdir(cwd)
-    except Exception as e:
-        # Fallback to pure Python viphoneme.T2IPA if vi2IPA fails (e.g. on Windows where vinorm Linux binary cannot run)
+    # Check if we should use pure python phonemizer to bypass locks and file I/O
+    use_pure = os.getenv("PURE_PYTHON_PHONEMIZER", "true").lower() in ("true", "1", "yes")
+    is_windows = sys.platform == "win32"
+
+    if use_pure or is_windows:
         try:
             from viphoneme import T2IPA
             ipa_text = T2IPA(text)
         except Exception as e2:
             print(f"[WARN] Viphoneme T2IPA failed: {e2}")
             return text_to_phonemes_charbased(text)
+    else:
+        # Normal mode: use full viphoneme with isolation (Linux only, uses compiled vinorm binary)
+        try:
+            _ensure_vinorm_isolated()
+            workdir = _get_viphoneme_workdir()
+            with _viphoneme_global_lock():
+                cwd = os.getcwd()
+                os.chdir(workdir)
+                try:
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        with _redirect_fds_to_devnull():
+                            ipa_text = vi2IPA(text)
+                finally:
+                    os.chdir(cwd)
+        except Exception as e:
+            # Fallback to pure Python viphoneme.T2IPA if vi2IPA fails (e.g. on Windows where vinorm Linux binary cannot run)
+            try:
+                from viphoneme import T2IPA
+                ipa_text = T2IPA(text)
+            except Exception as e2:
+                print(f"[WARN] Viphoneme T2IPA failed: {e2}")
+                return text_to_phonemes_charbased(text)
     
     # Check if viphoneme returned empty or invalid result
     if not ipa_text or ipa_text.strip() in ['', '.', '..', '...']:

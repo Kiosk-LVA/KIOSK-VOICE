@@ -108,6 +108,15 @@ class TTSEngineManager:
         elapsed = time.time() - start_time
         logger.info(f"V-TTS engine loaded successfully in {elapsed:.2f}s! Available speakers: {self.get_speakers()}")
 
+        # 3. Warmup TTS engine to pre-allocate memory and initialize PyTorch computational graph
+        logger.info("Warming up V-TTS engine with a dummy inference...")
+        try:
+            warmup_speaker = self.get_speakers()[0] if self.get_speakers() else "NF"
+            _ = self.tts.synthesize("Khởi động", speaker=warmup_speaker)
+            logger.info("V-TTS engine warmup completed successfully!")
+        except Exception as e:
+            logger.error(f"V-TTS engine warmup failed: {e}")
+
     def is_ready(self) -> bool:
         return self._is_ready and self.tts is not None
 

@@ -76,6 +76,16 @@ logger = logging.getLogger("kiosk-tts.server")
 async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Kiosk TTS Service...")
+    
+    # Configure PyTorch CPU Thread Optimization
+    try:
+        import torch
+        torch.set_num_threads(settings.TORCH_THREADS)
+        torch.set_num_interop_threads(1)
+        logger.info(f"PyTorch CPU threads configured: {settings.TORCH_THREADS} intra-op thread(s), 1 inter-op thread")
+    except Exception as e:
+        logger.warning(f"Failed to configure PyTorch threads: {e}")
+
     cache_manager.connect()
     engine_manager.load_model()
     yield
@@ -213,11 +223,15 @@ def _process_tts_request(text: str, speaker: Optional[str]):
         )
 
     selected_speaker = speaker or settings.DEFAULT_SPEAKER
+
+    # Normalize text before checking cache
+    from src.vietnamese.text_processor import process_vietnamese_text
+    norm_text = process_vietnamese_text(clean_text)
     
-    # 1. Check Redis Cache
-    cached_wav = cache_manager.get_audio(clean_text, selected_speaker, settings.DEFAULT_SPEED)
+    # 1. Check Redis Cache using normalized text
+    cached_wav = cache_manager.get_audio(norm_text, selected_speaker, settings.DEFAULT_SPEED)
     if cached_wav:
-        logger.info(f"Cache HIT for text: '{clean_text[:25]}...' [speaker={selected_speaker}]")
+        logger.info(f"Cache HIT for text: '{norm_text[:25]}...' [speaker={selected_speaker}]")
         return StreamingResponse(
             io.BytesIO(cached_wav),
             media_type="audio/wav",
@@ -228,10 +242,10 @@ def _process_tts_request(text: str, speaker: Optional[str]):
         )
 
     # 2. Cache MISS: Low-latency Chunk Streaming (~400ms first audio byte)
-    logger.info(f"Cache MISS for text: '{clean_text[:25]}...' [speaker={selected_speaker}] -> Initiating Chunk Streaming")
+    logger.info(f"Cache MISS for text: '{norm_text[:25]}...' [speaker={selected_speaker}] -> Initiating Chunk Streaming")
     return StreamingResponse(
         engine_manager.synthesize_stream_generator(
-            text=clean_text,
+            text=norm_text,
             speaker=selected_speaker,
         ),
         media_type="audio/wav",

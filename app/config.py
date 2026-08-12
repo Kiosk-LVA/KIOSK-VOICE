@@ -25,4 +25,9 @@ class Settings:
     # Security Settings (HMAC signature secret, optional)
     API_HMAC_SECRET: str = os.getenv("API_HMAC_SECRET", "")
 
+    # CPU Optimization Settings
+    TORCH_THREADS: int = int(os.getenv("TORCH_THREADS", "4"))
+    TORCH_COMPILE: bool = os.getenv("TORCH_COMPILE", "false").lower() in ("true", "1", "yes")
+    PURE_PYTHON_PHONEMIZER: bool = os.getenv("PURE_PYTHON_PHONEMIZER", "true").lower() in ("true", "1", "yes")
+
 settings = Settings()

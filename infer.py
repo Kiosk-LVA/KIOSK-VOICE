@@ -125,6 +125,17 @@ class VietnameseTTS:
         self.model.eval()
         
         print(f"Model loaded from {checkpoint_path}")
+
+        # Optional PyTorch Graph Compilation for optimized CPU execution
+        compile_model = os.getenv("TORCH_COMPILE", "false").lower() in ("true", "1", "yes")
+        if compile_model:
+            try:
+                print("Compiling PyTorch VITS model using torch.compile (dynamic=True)...")
+                # VITS has dynamic length sequences, so dynamic=True is critical
+                self.model = torch.compile(self.model, dynamic=True)
+                print("Model compiled successfully!")
+            except Exception as e:
+                print(f"Warning: Failed to compile model: {e}")
     
     def text_to_sequence(self, text, speaker):
         """Convert text to model input tensors."""
